@@ -37,6 +37,7 @@ function Index() {
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-6xl">Fire burns <span className="text-flame">round</span> in space.<br />We help keep crews safe.</h1>
           <p className="mt-4 max-w-2xl text-muted-foreground">Microgravity flames are spherical and diffusion-driven, and future Moon bases may run above 30% oxygen. Astro Spark summarizes and ranks NASA PSI combustion experiments (BASS, FLEX, ACME…) and turns your conditions into a fire-risk score.</p>
           <Link to="/mission" className="mt-6 inline-flex rounded-full bg-flame px-6 py-3 font-bold text-primary-foreground">▶ Start the story mission</Link>
+          <Link to="/ops" className="ml-3 mt-6 inline-flex rounded-full border px-6 py-3 font-bold">🛰️ Ops console</Link>
         </div>
         <blockquote className="rounded-3xl border bg-card p-5">
           <FireTruck className="mb-2 w-40" />

@@ -58,6 +58,7 @@ export function Cadet() {
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
   const [ghost, setGhost] = useState(0);
+  const [splash, setSplash] = useState(false);
   const done = i >= QUIZ.length;
   const size = 60 + (oxy - 15) * 7;
   const msg = oxy > 30 ? "Whoa! Too much oxygen — the fire is HUGE! 🚨" : oxy > 23 ? "Careful, Cadet! The fire is growing." : "Nice! The fire stays small and safe.";

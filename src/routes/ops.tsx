@@ -156,11 +156,13 @@ function Ops() {
                 <button onClick={() => act(`EVACUATE ${cur.name} → safe haven`)} className="rounded-2xl bg-destructive p-5 text-lg font-bold text-destructive-foreground">🚨 Evacuate</button>
               </div>
               <div className="rounded-2xl border bg-card p-4 text-sm"><b>Why:</b> {context(cur)} {action(cur, cur.s)}</div>
+              <div className="rounded-2xl border-2 border-primary bg-card p-4 text-sm font-bold">{roleAction("astro", cur.s)}</div>
             </>
           )}
           {role === "mcc" && (
             <>
               <div className="rounded-2xl border bg-card p-4"><h3 className="mb-2 font-bold">Station risk heatmap <span className="text-xs font-normal text-muted-foreground">(click a module)</span></h3><StationMap mods={mods} sel={sel} onSel={setSel} big /></div>
+              <div className="rounded-2xl border-2 border-primary bg-card p-4 text-sm font-bold">{roleAction("mcc", top.s)}</div>
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="rounded-2xl border bg-card p-4"><h3 className="font-bold">24h risk forecast · {cur.name}</h3><Spark data={forecast(cur)} /><div className="flex justify-between text-xs text-muted-foreground"><span>now</span><span>+12h</span><span>+24h</span></div></div>
                 <div className="rounded-2xl border bg-card p-4"><h3 className="mb-3 font-bold">Resources</h3>
@@ -181,6 +183,7 @@ function Ops() {
                   <li>Not in this dataset: flame temperature, solid materials. Next: join BASS-II and SoFIE data.</li>
                 </ul>
               </div>
+              <div className="rounded-2xl border-2 border-primary bg-card p-4 text-sm font-bold">{roleAction("sci", top.s)}</div>
             </>
           )}
         </main>

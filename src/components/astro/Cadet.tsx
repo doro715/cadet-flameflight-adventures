@@ -39,9 +39,10 @@ const QUIZ = [
 ];
 
 const GHOST_STEPS = [
-  { btn: "📢 Press to Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!" },
-  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting sleepy!" },
-  { btn: "💦 Spray the Magic Water Mist!", res: "Fire extinguished! You saved the space station! 🎉" },
+  { btn: "📢 Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!", o2: 29, flame: 110, fact: "Every space fire starts with a call. Mission Control watches the air in every room, 24/7." },
+  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting dizzy and slows down!", o2: 26, flame: 85, fact: "In space, flames eat the air blown by fans. No fan = no fresh oxygen = a sleepy flame." },
+  { btn: "💦 Spray the Magic Water Mist!", res: "The mist clings to the flame like a wet blanket!", o2: 18, flame: 45, fact: "NASA's fine-water mist uses static electricity to stick to surfaces — a bucket of water would just float away!" },
+  { btn: "🚪 Seal the Hatch!", res: "Door sealed! The flame ate all the air and fell asleep. 😴", o2: 12, flame: 0, fact: "With the hatch closed, the fire uses up the last oxygen and goes out — just like a candle under a jar." },
 ];
 
 const GHOST_SCIENCE = [
@@ -57,6 +58,7 @@ export function Cadet() {
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
   const [ghost, setGhost] = useState(0);
+  const [splash, setSplash] = useState(false);
   const done = i >= QUIZ.length;
   const size = 60 + (oxy - 15) * 7;
   const msg = oxy > 30 ? "Whoa! Too much oxygen — the fire is HUGE! 🚨" : oxy > 23 ? "Careful, Cadet! The fire is growing." : "Nice! The fire stays small and safe.";
@@ -103,16 +105,59 @@ export function Cadet() {
             </div>
           ))}
         </div>
-        <div className="mt-5 rounded-2xl border-2 border-dashed p-5 text-center">
-          <div className="mb-3 flex justify-center">
-            {ghost < 3 ? <Flame round size={ghost === 2 ? 50 : ghost === 1 ? 80 : 110} /> : <span className="text-6xl">😴</span>}
+        <div className="mt-5 rounded-2xl border-2 border-dashed p-5">
+          <div className={`rounded-xl p-3 text-center font-bold ${ghost === 0 ? "flicker bg-destructive text-destructive-foreground" : "bg-secondary"}`}>
+            {ghost === 0 ? "🚨 ALARM! A ghost flame is burning in the Destiny Lab!" : ghost < 4 ? `Mission step ${ghost}/4 — keep going, Cadet!` : "🏅 Mission complete — Ghost Flame Fighter badge earned!"}
           </div>
-          {ghost < 3 ? (
-            <button onClick={() => setGhost(ghost + 1)} className="rounded-full bg-primary px-6 py-3 text-lg font-bold text-primary-foreground">{GHOST_STEPS[ghost]!.btn}</button>
-          ) : (
-            <button onClick={() => setGhost(0)} className="rounded-full border px-5 py-2 font-bold">Fight another fire!</button>
+
+          <div className="mt-4 grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
+            <div className="rounded-xl bg-background p-3 text-center">
+              <div className="text-xs font-bold uppercase text-muted-foreground">Oxygen in the room</div>
+              <div className="font-display text-3xl font-bold">{ghost === 0 ? 29 : GHOST_STEPS[ghost - 1]!.o2}%</div>
+              <div className="mt-1 h-2 overflow-hidden rounded bg-muted">
+                <div className={`h-full transition-all duration-700 ${(ghost === 0 ? 29 : GHOST_STEPS[ghost - 1]!.o2) > 21 ? "bg-destructive" : "bg-safe"}`} style={{ width: `${((ghost === 0 ? 29 : GHOST_STEPS[ghost - 1]!.o2) / 35) * 100}%` }} />
+              </div>
+              <div className="mt-1 text-xs text-muted-foreground">Fire needs oxygen — watch it drop!</div>
+            </div>
+
+            <div className="flex justify-center">
+              {ghost < 4 ? (
+                <div className={ghost >= 2 ? "" : "flicker"}><Flame round size={ghost === 0 ? 110 : GHOST_STEPS[ghost - 1]!.flame} /></div>
+              ) : (
+                <span className="text-6xl">😴</span>
+              )}
+            </div>
+
+            <div className="rounded-xl bg-background p-3 text-center">
+              <div className="text-xs font-bold uppercase text-muted-foreground">Ghost flame</div>
+              <div className="font-display text-3xl font-bold">{ghost === 0 ? "AWAKE" : ghost < 4 ? ["AWAKE", "DIZZY", "SHRINKING", "SLEEPY"][ghost] : "ASLEEP"}</div>
+              <div className="mt-1 text-xs text-muted-foreground">Some space flames are invisible — astronauts call them ghost flames!</div>
+            </div>
+          </div>
+
+          {ghost > 0 && (
+            <div className="mt-4 rounded-xl bg-accent/15 p-3 text-sm">
+              <b>{GHOST_STEPS[ghost - 1]!.res}</b>
+              <p className="mt-1 text-muted-foreground">🔬 {GHOST_STEPS[ghost - 1]!.fact}</p>
+            </div>
           )}
-          {ghost > 0 && <p className="mt-3 font-bold">{GHOST_STEPS[ghost - 1]!.res}</p>}
+          {splash && (
+            <div className="mt-4 rounded-xl bg-destructive/15 p-3 text-sm">
+              <b>💧 Oh no! The water blobbed into floating balls — one drifted into an astronaut's nose!</b>
+              <p className="mt-1 text-muted-foreground">🔬 Water has no "down" in space. That's why we use sticky mist instead.</p>
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            {ghost < 4 ? (
+              <>
+                <button onClick={() => { setGhost(ghost + 1); setSplash(false); }} className="rounded-full bg-primary px-6 py-3 text-lg font-bold text-primary-foreground">{GHOST_STEPS[ghost]!.btn}</button>
+                <button onClick={() => setSplash(true)} className="rounded-full border-2 border-accent px-6 py-3 text-lg font-bold">🪣 Throw a bucket of water</button>
+              </>
+            ) : (
+              <button onClick={() => { setGhost(0); setSplash(false); }} className="rounded-full border px-5 py-2 font-bold">Fight another fire!</button>
+            )}
+          </div>
         </div>
       </div>
 

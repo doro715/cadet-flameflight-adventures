@@ -204,6 +204,7 @@ export function Cadet() {
           </div>
         )}
       </div>
+      <p className="rounded-xl bg-secondary p-3 text-center text-xs text-muted-foreground">Disclaimer: This is a hackathon prototype. The risk scores use a simplified heuristic model for demonstration, not a validated thermodynamic model.</p>
     </div>
   );
 }

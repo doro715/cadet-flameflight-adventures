@@ -38,12 +38,25 @@ const QUIZ = [
   { q: "Can space fires keep burning when you can't see them?", a: ["No way", "Yes — 'cool flames'!"], c: 1, why: "NASA's FLEX experiment found invisible cool flames that keep burning after the bright flame goes out." },
 ];
 
+const GHOST_STEPS = [
+  { btn: "📢 Press to Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!" },
+  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting sleepy!" },
+  { btn: "💦 Spray the Magic Water Mist!", res: "Fire extinguished! You saved the space station! 🎉" },
+];
+
+const GHOST_SCIENCE = [
+  { icon: "🛑", title: "The Ventilation Problem (Fan off!)", kid: "On Earth, fire goes up. In space, fire eats the air blowing from the fans! If we turn off the fans, the fire gets dizzy and slows down.", sci: "Real science: cutting off forced convection stops the oxygen supply." },
+  { icon: "💦", title: "The Magic Water Cloud (Fine-Water Mist)", kid: "We CANNOT throw a bucket of water in space — it will float into the astronauts' noses! 🚫 Instead, we use a magic Fine-Water Mist that sticks to the fire like a wet blanket.", sci: "Real science: NASA's fine-water mist extinguishers use electrostatics to cling to surfaces without floating." },
+  { icon: "🚪", title: "The Big Metal Door (Hatch Closure)", kid: "If the fire is too hot, the Space Fire Truck presses the 'Close Door' button. We seal the room and let the fire eat all the air until it goes to sleep! 💤", sci: "Real science: sealing the module depletes oxygen, starving the fire." },
+];
+
 export function Cadet() {
   const [space, setSpace] = useState(true);
   const [oxy, setOxy] = useState(21);
   const [i, setI] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
+  const [ghost, setGhost] = useState(0);
   const done = i >= QUIZ.length;
   const size = 60 + (oxy - 15) * 7;
   const msg = oxy > 30 ? "Whoa! Too much oxygen — the fire is HUGE! 🚨" : oxy > 23 ? "Careful, Cadet! The fire is growing." : "Nice! The fire stays small and safe.";

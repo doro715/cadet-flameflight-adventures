@@ -25,6 +25,29 @@ const ROLES: { id: Role; icon: string; name: string; goal: string }[] = [
   { id: "sci", icon: "🔬", name: "Scientist", goal: "Find root causes · optimize" },
 ];
 
+/** Role-specific action recommendations (thresholds: >60 high, 30-60 moderate, <30 low). */
+function roleAction(role: Role, s: number) {
+  const band = s > 60 ? 0 : s >= 30 ? 1 : 2;
+  const table: Record<Role, string[]> = {
+    astro: [
+      "🚨 EMERGENCY: Shut off ventilation immediately! Deploy Fine-Water-Mist. Seal the module hatch if fire persists.",
+      "⚠️ STANDBY: Don your oxygen mask. Monitor O₂ levels. Prepare fire suppression tools.",
+      "✅ SAFE: Atmosphere normal. Continue standard operations.",
+    ],
+    mcc: [
+      "🚨 RED ALERT: Initiate emergency protocols. Isolate the module's power and air supply. Prepare crew evacuation routes.",
+      "⚠️ MONITOR: Adjust HVAC (ventilation) flow. Cross-reference sensor data. Alert the crew.",
+      "✅ NOMINAL: All telemetry within normal limits. No action required.",
+    ],
+    sci: [
+      "🚨 ABORT: Stop all combustion experiments immediately. Extract and isolate sensitive samples. Download current telemetry.",
+      "⚠️ CAUTION: Re-evaluate oxygen concentration (XO2). Ensure fire-retardant materials are secured.",
+      "✅ OPTIMAL: Ideal conditions for microgravity combustion experiments. Proceed.",
+    ],
+  };
+  return table[role][band]!;
+}
+
 function Badge({ s }: { s: number }) {
   const l = level(s);
   return <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold ${l.cls}`}>{l.icon} {l.label}</span>;

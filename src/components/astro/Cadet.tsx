@@ -18,7 +18,7 @@ export function FireTruck({ className = "" }: { className?: string }) {
   );
 }
 
-function Flame({ round, size }: { round: boolean; size: number }) {
+export function Flame({ round, size }: { round: boolean; size: number }) {
   return (
     <svg viewBox="0 0 100 100" style={{ width: size, height: size }} className="flicker">
       {round ? (

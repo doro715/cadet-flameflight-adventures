@@ -92,11 +92,20 @@ export function Cadet() {
         </div>
 
         <div className="rounded-3xl border bg-card p-6">
-          <h3 className="text-xl font-bold">🎚️ Oxygen Challenge</h3>
-          <p className="text-sm text-muted-foreground">Slide the oxygen. Keep the Moon base fire small!</p>
-          <div className="my-4 flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-background"><Flame round size={Math.min(size, 150)} /></div>
-          <input type="range" min={15} max={40} value={oxy} onChange={(e) => setOxy(+e.target.value)} className="w-full" />
-          <div className="flex justify-between text-sm"><span>Oxygen: <b>{oxy}%</b></span><span className="font-bold">{msg}</span></div>
+          <h3 className="text-xl font-bold">🎮 Oxygen Challenge: Put out the fire!</h3>
+          <p className="text-sm text-muted-foreground">A fire started in the Moon base! Use all three space firefighting moves to starve it of oxygen.</p>
+          <div className="my-4 flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-background">
+            {out ? <span className="text-6xl">😴</span> : <Flame round size={Math.min(size, 150)} />}
+          </div>
+          <div className="grid gap-2">
+            {OXY_MOVES.map((m) => {
+              const used = moves.includes(m.id);
+              return <button key={m.id} disabled={used} onClick={() => setMoves([...moves, m.id])} className={`rounded-2xl border-2 p-3 text-left font-bold transition ${used ? "border-safe bg-safe/20 opacity-60" : "hover:bg-secondary"}`}>{used ? "✅ " : ""}{m.btn}</button>;
+            })}
+          </div>
+          {moves.length > 0 && <p className="mt-3 rounded-xl bg-accent/15 p-2 text-sm"><b>{OXY_MOVES.find((m) => m.id === moves[moves.length - 1])!.res}</b></p>}
+          <div className="mt-3 flex justify-between text-sm"><span>Oxygen: <b>{oxy}%</b></span><span className="font-bold">{msg}</span></div>
+          {out && <button onClick={() => setMoves([])} className="mt-3 rounded-full border px-5 py-2 font-bold">Play again</button>}
         </div>
       </div>
 

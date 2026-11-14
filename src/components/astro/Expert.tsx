@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { RealData } from "./RealData";
 import { MATERIALS, riskScore, band, rankExperiments, insight, toCSV } from "@/lib/fire";
 
 const toneCls = { safe: "text-safe", warn: "text-warn", danger: "text-destructive" };
@@ -110,6 +111,7 @@ export function Expert() {
           </div>
           <Chart kPa={kPa} gravity={gravity} o2={o2} matId={matId} />
         </div>
+        <RealData />
         <div className="rounded-2xl border bg-card p-5">
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <h3 className="mr-auto text-lg font-bold">Ranked PSI experiments</h3>

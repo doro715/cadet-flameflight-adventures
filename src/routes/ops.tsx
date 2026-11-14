@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { MODULES, moduleRisk, level, context, action, forecast, mat, type Module } from "@/lib/station";
 import { RealData } from "@/components/astro/RealData";
 import { ROWS, train } from "@/lib/model";
+import { Button } from "@/components/ui/button";
+import { LoaderCircle } from "lucide-react";
+import { astronautSimulation, INITIAL_ASTRONAUT, INITIAL_READINGS, SUPPRESSED_READINGS, SUPPRESSION_MESSAGE, ISOLATION_DELAY_MS } from "@/lib/astronaut-simulation";
 
 export const Route = createFileRoute("/ops")({
   head: () => ({
@@ -92,24 +95,46 @@ function Ops() {
   const [tick, setTick] = useState(0);
   const [sel, setSel] = useState("destiny");
   const [log, setLog] = useState<string[]>([]);
-  const [count, setCount] = useState(90);
+  const [simulation, sendSimulation] = useReducer(astronautSimulation, INITIAL_ASTRONAUT);
+  const [isolatedModule, setIsolatedModule] = useState("destiny");
   const [res, setRes] = useState({ mist: 82, co2: 64, o2: 71 });
   const model = useMemo(() => train(), []);
 
-  useEffect(() => { const t = setInterval(() => { setTick((v) => v + 1); setCount((c) => (c > 0 ? c - 1 : 90)); }, 1000); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setTick((v) => v + 1), 1000); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    if (role !== "astro" || simulation.phase !== "ready") return;
+    const timer = setInterval(() => sendSimulation({ type: "tick" }), 1000);
+    return () => clearInterval(timer);
+  }, [role, simulation.phase]);
+  useEffect(() => {
+    if (simulation.phase !== "isolating") return;
+    const timer = setTimeout(() => {
+      sendSimulation({ type: "elapsed", milliseconds: ISOLATION_DELAY_MS });
+      setLog((entries) => [`${new Date().toLocaleTimeString()} · ${SUPPRESSION_MESSAGE}`, ...entries].slice(0, 5));
+    }, ISOLATION_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [simulation.phase]);
 
-  const mods = MODULES.map((m) => { const o2 = +(m.o2 + Math.sin((tick + m.x) / 6) * 0.6).toFixed(1); const mm = { ...m, o2 }; return { ...mm, s: moduleRisk(mm) }; }).sort((a, b) => b.s - a.s);
-  const cur = mods.find((m) => m.id === sel)!;
-  const top = mods[0]!;
-  const ign = Math.round(model.predict({ type: "normal", fuel: "propane", o2: cur.o2 / 100, bar: cur.kPa / 101.3 }) * 100);
+  const mods = MODULES.map((m) => {
+    if (simulation.phase === "suppressed" && m.id === isolatedModule) return { ...m, o2: SUPPRESSED_READINGS.oxygen, s: SUPPRESSED_READINGS.risk };
+    if (role === "astro" && m.id === "destiny") return { ...m, o2: INITIAL_READINGS.oxygen, s: INITIAL_READINGS.risk };
+    const o2 = +(m.o2 + Math.sin((tick + m.x) / 6) * 0.6).toFixed(1);
+    const mm = { ...m, o2 }; return { ...mm, s: moduleRisk(mm) };
+  }).sort((a, b) => b.s - a.s);
+  const cur = mods.find((m) => m.id === sel) ?? mods[0];
+  const top = mods[0];
+  if (!cur || !top) return null;
+  const isSuppressed = simulation.phase === "suppressed" && cur.id === isolatedModule;
+  const ign = isSuppressed ? SUPPRESSED_READINGS.ignition : role === "astro" && cur.id === "destiny" ? INITIAL_READINGS.ignition : Math.round(model.predict({ type: "normal", fuel: "propane", o2: cur.o2 / 100, bar: cur.kPa / 101.3 }) * 100);
   const act = (msg: string, k?: keyof typeof res) => { setLog((l) => [`${new Date().toLocaleTimeString()} · ${msg}`, ...l].slice(0, 5)); if (k) setRes((r) => ({ ...r, [k]: Math.max(0, r[k] - 15) })); };
 
   return (
-    <div className="ops-cursor min-h-screen">
+    <div className={`ops-cursor min-h-screen ${role === "astro" && simulation.phase === "critical" ? "astronaut-critical-screen" : ""}`}>
+      {role === "astro" && simulation.phase === "critical" && <div className="astronaut-critical-flash pointer-events-none fixed inset-0 z-20" aria-hidden="true" />}
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b bg-background/85 px-5 py-3 backdrop-blur">
         <Link to="/" className="font-display text-xl font-bold">Astro<span className="text-flame">Spark</span> <span className="text-sm text-muted-foreground">Ops</span></Link>
         <div className="ml-auto flex rounded-full border p-1 text-sm" role="tablist" aria-label="Role selector">
-          {ROLES.map((r) => <button key={r.id} role="tab" aria-selected={role === r.id} onClick={() => setRole(r.id)} className={`rounded-full px-3 py-1.5 font-bold ${role === r.id ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{r.icon} {r.name}</button>)}
+          {ROLES.map((r) => <Button variant="ghost" key={r.id} role="tab" aria-selected={role === r.id} onClick={() => setRole(r.id)} className={`h-auto whitespace-normal rounded-full px-3 py-1.5 font-bold ${role === r.id ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{r.icon} {r.name}</Button>)}
         </div>
       </header>
 
@@ -144,16 +169,21 @@ function Ops() {
         <main className="space-y-5">
           {role === "astro" && (
             <>
+              <div className="border-b pb-4 text-center" role="timer" aria-label="Emergency countdown">
+                <p className="text-sm font-bold uppercase text-muted-foreground">{simulation.phase === "suppressed" ? "Emergency resolved" : simulation.phase === "isolating" ? "Isolation in progress · countdown stopped" : "Emergency response countdown"}</p>
+                <p className={`font-display text-4xl font-bold tabular-nums ${simulation.phase === "suppressed" ? "text-safe" : simulation.remaining <= 10 ? "text-destructive" : "text-warn"}`}>{simulation.remaining}s</p>
+              </div>
+              {simulation.phase === "critical" && <p role="alert" className="rounded-lg bg-destructive p-5 text-center text-xl font-bold text-destructive-foreground">🚨 CRITICAL: FIRE DETECTED. EVACUATE NOW.</p>}
               <div className={`rounded-3xl p-8 text-center ${level(cur.s).cls}`}>
                 <div className="text-sm font-bold uppercase tracking-widest opacity-80">{cur.name}</div>
                 <div className="font-display text-8xl font-bold">{cur.s}</div>
                 <div className="text-2xl font-bold">{level(cur.s).icon} {level(cur.s).label}</div>
-                <div className="mt-3 text-sm opacity-90">Safety re-check in <b className="font-display text-lg">{count}s</b></div>
+                <div className="mt-3 text-sm opacity-90">{isSuppressed ? "Simulated fire suppressed · O₂ normalized" : "Emergency training simulation"}</div>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
-                <button onClick={() => act(`Fine water mist activated in ${cur.name}`, "mist")} className="rounded-2xl bg-accent p-5 text-lg font-bold text-accent-foreground">💧 Start suppression</button>
-                <button onClick={() => act(`Ventilation isolated in ${cur.name}`)} className="rounded-2xl bg-warn p-5 text-lg font-bold text-primary-foreground">🌀 Isolate ventilation</button>
-                <button onClick={() => act(`EVACUATE ${cur.name} → safe haven`)} className="rounded-2xl bg-destructive p-5 text-lg font-bold text-destructive-foreground">🚨 Evacuate</button>
+                <Button onClick={() => act(`Fine water mist activated in ${cur.name}`, "mist")} className="h-auto min-h-20 whitespace-normal rounded-2xl bg-accent p-5 text-lg font-bold text-accent-foreground">💧 Start suppression</Button>
+                <Button disabled={simulation.phase === "isolating" || simulation.phase === "suppressed"} aria-busy={simulation.phase === "isolating"} onClick={() => { setIsolatedModule(cur.id); sendSimulation({ type: "isolate" }); }} className="h-auto min-h-20 whitespace-normal rounded-2xl bg-warn p-5 text-lg font-bold text-primary-foreground">{simulation.phase === "isolating" ? <><LoaderCircle className="animate-spin" aria-hidden="true" /> Isolating…</> : simulation.phase === "suppressed" ? "✅ Ventilation isolated" : "🌀 Isolate ventilation"}</Button>
+                <Button onClick={() => act(`EVACUATE ${cur.name} → safe haven`)} variant="destructive" className="h-auto min-h-20 whitespace-normal rounded-2xl p-5 text-lg font-bold">🚨 Evacuate</Button>
               </div>
               <div className="rounded-2xl border bg-card p-4 text-sm"><b>Why:</b> {context(cur)} {action(cur, cur.s)}</div>
               <div className="rounded-2xl border-2 border-primary bg-card p-4 text-sm font-bold">{roleAction("astro", cur.s)}</div>
@@ -193,11 +223,13 @@ function Ops() {
           <div className="rounded-2xl border bg-card p-4">
             <div className="flex items-center justify-between"><h3 className="font-bold">{cur.name}</h3><Badge s={cur.s} /></div>
             <dl className="mt-3 space-y-2 text-sm">
-              {[["Oxygen", `${cur.o2}%`], ["Pressure", `${cur.kPa} kPa`], ["Material", mat(cur.mat).name], ["Gravity", cur.gravity === "micro" ? "Microgravity" : "Lunar 1/6 g"], ["Risk score", `${cur.s}/100`], ["CFI-G ignition prob.", `${ign}%`]].map(([k, v]) => <div key={k} className="flex justify-between border-b pb-1"><dt className="text-muted-foreground">{k}</dt><dd className="font-bold">{v}</dd></div>)}
+              {[["Oxygen", `${cur.o2.toFixed(1)}%`], ["Pressure", `${cur.kPa} kPa`], ["Material", mat(cur.mat).name], ["Gravity", cur.gravity === "micro" ? "Microgravity" : "Lunar 1/6 g"], ["Risk score", `${cur.s}/100`], ["CFI-G ignition prob.", `${ign}%`]].map(([k, v]) => <div key={k} className="flex justify-between border-b pb-1"><dt className="text-muted-foreground">{k}</dt><dd className="font-bold">{v}</dd></div>)}
             </dl>
             <p className="mt-3 rounded-lg bg-secondary p-2 text-xs">{context(cur)}</p>
             <p className="mt-2 text-xs"><b>Action:</b> {action(cur, cur.s)}</p>
             <p className="mt-2 text-xs text-muted-foreground">Sources: NASA PSI CFI-G (ignition), BASS-II material limits. Module values are simulated.</p>
+            <p className="mt-2 text-xs text-muted-foreground">Data Source: NASA PSI-159 &amp; PSI-26 (BASS-II)</p>
+            {role === "astro" && <p className="mt-2 text-xs text-muted-foreground">Astronaut readings are scripted demo values, not NASA measurements. Isolation alone does not normalize oxygen or guarantee fire suppression.</p>}
           </div>
           <div className="rounded-2xl border bg-card p-4">
             <h3 className="mb-2 font-bold">Event log</h3>

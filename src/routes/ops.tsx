@@ -19,10 +19,10 @@ export const Route = createFileRoute("/ops")({
 });
 
 type Role = "astro" | "mcc" | "sci";
-const ROLES: { id: Role; icon: string; name: string; zh: string; goal: string }[] = [
-  { id: "astro", icon: "👨‍🚀", name: "Astronaut", zh: "宇航员", goal: "Confirm safety · act fast" },
-  { id: "mcc", icon: "🛰️", name: "Mission Control", zh: "任务控制中心", goal: "Monitor all · allocate resources" },
-  { id: "sci", icon: "🔬", name: "Scientist", zh: "太空科学家", goal: "Find root causes · optimize" },
+const ROLES: { id: Role; icon: string; name: string; goal: string }[] = [
+  { id: "astro", icon: "👨‍🚀", name: "Astronaut", goal: "Confirm safety · act fast" },
+  { id: "mcc", icon: "🛰️", name: "Mission Control", goal: "Monitor all · allocate resources" },
+  { id: "sci", icon: "🔬", name: "Scientist", goal: "Find root causes · optimize" },
 ];
 
 function Badge({ s }: { s: number }) {
@@ -94,7 +94,7 @@ function Ops() {
       <div className="grid gap-3 px-5 pt-5 sm:grid-cols-2 lg:grid-cols-4">
         <div className={`rounded-2xl p-4 ${level(top.s).cls}`}><div className="text-xs font-bold uppercase opacity-80">Highest risk module</div><div className="font-display text-2xl font-bold">{top.name} · {top.s}</div></div>
         <div className="rounded-2xl border bg-card p-4"><div className="text-xs uppercase text-muted-foreground">Modules at high risk</div><div className="font-display text-2xl font-bold">{mods.filter((m) => m.s >= 65).length} / {mods.length}</div></div>
-        <div className="rounded-2xl border bg-card p-4"><div className="text-xs uppercase text-muted-foreground">Role</div><div className="font-display text-2xl font-bold">{ROLES.find((r) => r.id === role)!.icon} {ROLES.find((r) => r.id === role)!.zh}</div><div className="text-xs text-muted-foreground">{ROLES.find((r) => r.id === role)!.goal}</div></div>
+        <div className="rounded-2xl border bg-card p-4"><div className="text-xs uppercase text-muted-foreground">Role</div><div className="font-display text-2xl font-bold">{ROLES.find((r) => r.id === role)!.icon} {ROLES.find((r) => r.id === role)!.name}</div><div className="text-xs text-muted-foreground">{ROLES.find((r) => r.id === role)!.goal}</div></div>
         <div className="rounded-2xl border bg-card p-4"><div className="text-xs uppercase text-muted-foreground">Data basis</div><div className="font-display text-2xl font-bold">{ROWS.length} PSI tests</div><div className="text-xs text-muted-foreground">CFI-G · simplified model</div></div>
       </div>
 
@@ -122,7 +122,7 @@ function Ops() {
           {role === "astro" && (
             <>
               <div className={`rounded-3xl p-8 text-center ${level(cur.s).cls}`}>
-                <div className="text-sm font-bold uppercase tracking-widest opacity-80">{cur.name} · {cur.zh}</div>
+                <div className="text-sm font-bold uppercase tracking-widest opacity-80">{cur.name}</div>
                 <div className="font-display text-8xl font-bold">{cur.s}</div>
                 <div className="text-2xl font-bold">{level(cur.s).icon} {level(cur.s).label}</div>
                 <div className="mt-3 text-sm opacity-90">Safety re-check in <b className="font-display text-lg">{count}s</b></div>
@@ -166,7 +166,6 @@ function Ops() {
         <aside className="space-y-4">
           <div className="rounded-2xl border bg-card p-4">
             <div className="flex items-center justify-between"><h3 className="font-bold">{cur.name}</h3><Badge s={cur.s} /></div>
-            <p className="text-xs text-muted-foreground">{cur.zh}</p>
             <dl className="mt-3 space-y-2 text-sm">
               {[["Oxygen", `${cur.o2}%`], ["Pressure", `${cur.kPa} kPa`], ["Material", mat(cur.mat).name], ["Gravity", cur.gravity === "micro" ? "Microgravity" : "Lunar 1/6 g"], ["Risk score", `${cur.s}/100`], ["CFI-G ignition prob.", `${ign}%`]].map(([k, v]) => <div key={k} className="flex justify-between border-b pb-1"><dt className="text-muted-foreground">{k}</dt><dd className="font-bold">{v}</dd></div>)}
             </dl>

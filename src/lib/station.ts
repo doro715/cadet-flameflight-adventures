@@ -1,19 +1,19 @@
 import { MATERIALS, riskScore } from "@/lib/fire";
 
-export type Module = { id: string; name: string; zh: string; o2: number; kPa: number; mat: string; gravity: "micro" | "lunar"; x: number; y: number; w: number; h: number };
+export type Module = { id: string; name: string; o2: number; kPa: number; mat: string; gravity: "micro" | "lunar"; x: number; y: number; w: number; h: number };
 // Layout coordinates for the station map (0-100 grid). Values are simulated for the demo.
 export const MODULES: Module[] = [
-  { id: "destiny", name: "Destiny Lab", zh: "命运号实验舱", o2: 29, kPa: 101, mat: "cotton", gravity: "micro", x: 38, y: 40, w: 18, h: 18 },
-  { id: "columbus", name: "Columbus", zh: "哥伦布舱", o2: 24, kPa: 101, mat: "pmma", gravity: "micro", x: 16, y: 40, w: 18, h: 18 },
-  { id: "kibo", name: "Kibo", zh: "希望号", o2: 22, kPa: 101, mat: "silicone", gravity: "micro", x: 60, y: 40, w: 18, h: 18 },
-  { id: "harmony", name: "Harmony Node", zh: "和谐号节点舱", o2: 21, kPa: 101, mat: "nomex", gravity: "micro", x: 38, y: 16, w: 18, h: 18 },
-  { id: "zvezda", name: "Zvezda", zh: "星辰号服务舱", o2: 23, kPa: 101, mat: "paper", gravity: "micro", x: 38, y: 64, w: 18, h: 18 },
-  { id: "moonhab", name: "Artemis Moon Hab", zh: "阿尔忒弥斯月球栖息舱", o2: 34, kPa: 56.5, mat: "cotton", gravity: "lunar", x: 82, y: 16, w: 16, h: 66 },
+  { id: "destiny", name: "Destiny Lab", o2: 29, kPa: 101, mat: "cotton", gravity: "micro", x: 38, y: 40, w: 18, h: 18 },
+  { id: "columbus", name: "Columbus", o2: 24, kPa: 101, mat: "pmma", gravity: "micro", x: 16, y: 40, w: 18, h: 18 },
+  { id: "kibo", name: "Kibo", o2: 22, kPa: 101, mat: "silicone", gravity: "micro", x: 60, y: 40, w: 18, h: 18 },
+  { id: "harmony", name: "Harmony Node", o2: 21, kPa: 101, mat: "nomex", gravity: "micro", x: 38, y: 16, w: 18, h: 18 },
+  { id: "zvezda", name: "Zvezda", o2: 23, kPa: 101, mat: "paper", gravity: "micro", x: 38, y: 64, w: 18, h: 18 },
+  { id: "moonhab", name: "Artemis Moon Hab", o2: 34, kPa: 56.5, mat: "cotton", gravity: "lunar", x: 82, y: 16, w: 16, h: 66 },
 ];
 
 export const mat = (id: string) => MATERIALS.find((m) => m.id === id)!;
 export const moduleRisk = (m: Module) => riskScore(m.o2, m.kPa, mat(m.mat), m.gravity);
-export const level = (s: number) => (s >= 65 ? { k: "high", icon: "🔴", label: "High Risk", zh: "高风险", cls: "bg-destructive text-destructive-foreground", txt: "text-destructive" } : s >= 35 ? { k: "mid", icon: "🟡", label: "Elevated", zh: "中风险", cls: "bg-warn text-primary-foreground", txt: "text-warn" } : { k: "low", icon: "🟢", label: "Low Risk", zh: "低风险", cls: "bg-safe text-primary-foreground", txt: "text-safe" });
+export const level = (s: number) => (s >= 65 ? { k: "high", icon: "🔴", label: "High Risk", cls: "bg-destructive text-destructive-foreground", txt: "text-destructive" } : s >= 35 ? { k: "mid", icon: "🟡", label: "Elevated", cls: "bg-warn text-primary-foreground", txt: "text-warn" } : { k: "low", icon: "🟢", label: "Low Risk", cls: "bg-safe text-primary-foreground", txt: "text-safe" });
 
 export function context(m: Module) {
   const ratio = m.o2 / 21;

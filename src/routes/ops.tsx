@@ -105,7 +105,7 @@ function Ops() {
   const act = (msg: string, k?: keyof typeof res) => { setLog((l) => [`${new Date().toLocaleTimeString()} · ${msg}`, ...l].slice(0, 5)); if (k) setRes((r) => ({ ...r, [k]: Math.max(0, r[k] - 15) })); };
 
   return (
-    <div className="min-h-screen">
+    <div className="ops-cursor min-h-screen">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b bg-background/85 px-5 py-3 backdrop-blur">
         <Link to="/" className="font-display text-xl font-bold">Astro<span className="text-flame">Spark</span> <span className="text-sm text-muted-foreground">Ops</span></Link>
         <div className="ml-auto flex rounded-full border p-1 text-sm" role="tablist" aria-label="Role selector">

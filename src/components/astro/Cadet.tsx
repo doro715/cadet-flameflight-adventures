@@ -39,9 +39,10 @@ const QUIZ = [
 ];
 
 const GHOST_STEPS = [
-  { btn: "📢 Press to Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!" },
-  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting sleepy!" },
-  { btn: "💦 Spray the Magic Water Mist!", res: "Fire extinguished! You saved the space station! 🎉" },
+  { btn: "📢 Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!", o2: 29, flame: 110, fact: "Every space fire starts with a call. Mission Control watches the air in every room, 24/7." },
+  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting dizzy and slows down!", o2: 26, flame: 85, fact: "In space, flames eat the air blown by fans. No fan = no fresh oxygen = a sleepy flame." },
+  { btn: "💦 Spray the Magic Water Mist!", res: "The mist clings to the flame like a wet blanket!", o2: 18, flame: 45, fact: "NASA's fine-water mist uses static electricity to stick to surfaces — a bucket of water would just float away!" },
+  { btn: "🚪 Seal the Hatch!", res: "Door sealed! The flame ate all the air and fell asleep. 😴", o2: 12, flame: 0, fact: "With the hatch closed, the fire uses up the last oxygen and goes out — just like a candle under a jar." },
 ];
 
 const GHOST_SCIENCE = [

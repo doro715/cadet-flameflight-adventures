@@ -38,13 +38,6 @@ const QUIZ = [
   { q: "Can space fires keep burning when you can't see them?", a: ["No way", "Yes — 'cool flames'!"], c: 1, why: "NASA's FLEX experiment found invisible cool flames that keep burning after the bright flame goes out." },
 ];
 
-const GHOST_STEPS = [
-  { btn: "📢 Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!", o2: 29, flame: 110, fact: "Every space fire starts with a call. Mission Control watches the air in every room, 24/7." },
-  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting dizzy and slows down!", o2: 26, flame: 85, fact: "In space, flames eat the air blown by fans. No fan = no fresh oxygen = a sleepy flame." },
-  { btn: "💦 Spray the Magic Water Mist!", res: "The mist clings to the flame like a wet blanket!", o2: 18, flame: 45, fact: "NASA's fine-water mist uses static electricity to stick to surfaces — a bucket of water would just float away!" },
-  { btn: "🚪 Seal the Hatch!", res: "Door sealed! The flame ate all the air and fell asleep. 😴", o2: 12, flame: 0, fact: "With the hatch closed, the fire uses up the last oxygen and goes out — just like a candle under a jar." },
-];
-
 const GHOST_SCIENCE = [
   { icon: "🛑", title: "The Ventilation Problem (Fan off!)", kid: "On Earth, fire goes up. In space, fire eats the air blowing from the fans! If we turn off the fans, the fire gets dizzy and slows down.", sci: "Real science: cutting off forced convection stops the oxygen supply." },
   { icon: "💦", title: "The Magic Water Cloud (Fine-Water Mist)", kid: "We CANNOT throw a bucket of water in space — it will float into the astronauts' noses! 🚫 Instead, we use a magic Fine-Water Mist that sticks to the fire like a wet blanket.", sci: "Real science: NASA's fine-water mist extinguishers use electrostatics to cling to surfaces without floating." },
@@ -57,8 +50,6 @@ export function Cadet() {
   const [i, setI] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
-  const [ghost, setGhost] = useState(0);
-  const [splash, setSplash] = useState(false);
   const done = i >= QUIZ.length;
   const OXY_MOVES = [
     { id: "fan", btn: "🛑 Turn OFF Ventilation", o2: 24, res: "Fan off! No more fresh air blown at the flame." },

@@ -53,15 +53,22 @@ const GHOST_SCIENCE = [
 
 export function Cadet() {
   const [space, setSpace] = useState(true);
-  const [oxy, setOxy] = useState(21);
+  const [moves, setMoves] = useState<string[]>([]);
   const [i, setI] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
   const [ghost, setGhost] = useState(0);
   const [splash, setSplash] = useState(false);
   const done = i >= QUIZ.length;
-  const size = 60 + (oxy - 15) * 7;
-  const msg = oxy > 30 ? "Whoa! Too much oxygen — the fire is HUGE! 🚨" : oxy > 23 ? "Careful, Cadet! The fire is growing." : "Nice! The fire stays small and safe.";
+  const OXY_MOVES = [
+    { id: "fan", btn: "🛑 Turn OFF Ventilation", o2: 24, res: "Fan off! No more fresh air blown at the flame." },
+    { id: "mist", btn: "💦 Spray Fine Water Mist", o2: 19, res: "The mist cools the flame like a wet blanket!" },
+    { id: "hatch", btn: "🚪 Seal the Hatch", o2: 12, res: "Sealed! The flame is running out of air…" },
+  ];
+  const oxy = moves.length === 0 ? 29 : OXY_MOVES.find((m) => m.id === moves[moves.length - 1])!.o2;
+  const out = moves.length === 3;
+  const size = 40 + oxy * 3.5;
+  const msg = out ? "Fire out! You used all three space firefighting moves! 🎉" : oxy > 26 ? "The fire is HUGE! Pick a move, Cadet! 🚨" : oxy > 21 ? "It's working — the flame is shrinking!" : "Almost there! One more move!";
 
   return (
     <div className="space-y-6">
@@ -85,16 +92,25 @@ export function Cadet() {
         </div>
 
         <div className="rounded-3xl border bg-card p-6">
-          <h3 className="text-xl font-bold">🎚️ Oxygen Challenge</h3>
-          <p className="text-sm text-muted-foreground">Slide the oxygen. Keep the Moon base fire small!</p>
-          <div className="my-4 flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-background"><Flame round size={Math.min(size, 150)} /></div>
-          <input type="range" min={15} max={40} value={oxy} onChange={(e) => setOxy(+e.target.value)} className="w-full" />
-          <div className="flex justify-between text-sm"><span>Oxygen: <b>{oxy}%</b></span><span className="font-bold">{msg}</span></div>
+          <h3 className="text-xl font-bold">🎮 Oxygen Challenge: Put out the fire!</h3>
+          <p className="text-sm text-muted-foreground">A fire started in the Moon base! Use all three space firefighting moves to starve it of oxygen.</p>
+          <div className="my-4 flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-background">
+            {out ? <span className="text-6xl">😴</span> : <Flame round size={Math.min(size, 150)} />}
+          </div>
+          <div className="grid gap-2">
+            {OXY_MOVES.map((m) => {
+              const used = moves.includes(m.id);
+              return <button key={m.id} disabled={used} onClick={() => setMoves([...moves, m.id])} className={`rounded-2xl border-2 p-3 text-left font-bold transition ${used ? "border-safe bg-safe/20 opacity-60" : "hover:bg-secondary"}`}>{used ? "✅ " : ""}{m.btn}</button>;
+            })}
+          </div>
+          {moves.length > 0 && <p className="mt-3 rounded-xl bg-accent/15 p-2 text-sm"><b>{OXY_MOVES.find((m) => m.id === moves[moves.length - 1])!.res}</b></p>}
+          <div className="mt-3 flex justify-between text-sm"><span>Oxygen: <b>{oxy}%</b></span><span className="font-bold">{msg}</span></div>
+          {out && <button onClick={() => setMoves([])} className="mt-3 rounded-full border px-5 py-2 font-bold">Play again</button>}
         </div>
       </div>
 
       <div className="rounded-3xl border bg-card p-6">
-        <h3 className="text-xl font-bold">👻 How to fight a Ghost Flame!</h3>
+        <h3 className="text-xl font-bold">🚒 Astro Spark: How to fight a Ghost Flame!</h3>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {GHOST_SCIENCE.map((g) => (
             <div key={g.title} className="rounded-2xl bg-secondary p-4">
@@ -188,6 +204,7 @@ export function Cadet() {
           </div>
         )}
       </div>
+      <p className="rounded-xl bg-secondary p-3 text-center text-xs text-muted-foreground">Disclaimer: This is a hackathon prototype. The risk scores use a simplified heuristic model for demonstration, not a validated thermodynamic model.</p>
     </div>
   );
 }

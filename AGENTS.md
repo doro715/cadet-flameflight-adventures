@@ -31,3 +31,4 @@ use the editor.
 
 - Keep Cadet rescue progression in a browser-safe reducer separate from its presentation so stage gates and game outcomes can be tested independently.
 - Pass the Expert-mode handoff from the home page into Cadet rather than duplicating mode state, so the existing dashboard remains the single destination for real data.
+- Reuse the prototype material list for Cadet equipment comparisons and keep story generation deterministic and browser-safe; label reference indices separately from NASA gas-test data to avoid implying validated spacecraft safety or live AI.

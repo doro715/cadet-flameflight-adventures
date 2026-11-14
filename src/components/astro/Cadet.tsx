@@ -60,8 +60,15 @@ export function Cadet() {
   const [ghost, setGhost] = useState(0);
   const [splash, setSplash] = useState(false);
   const done = i >= QUIZ.length;
-  const size = 60 + (oxy - 15) * 7;
-  const msg = oxy > 30 ? "Whoa! Too much oxygen — the fire is HUGE! 🚨" : oxy > 23 ? "Careful, Cadet! The fire is growing." : "Nice! The fire stays small and safe.";
+  const OXY_MOVES = [
+    { id: "fan", btn: "🛑 Turn OFF Ventilation", o2: 24, res: "Fan off! No more fresh air blown at the flame." },
+    { id: "mist", btn: "💦 Spray Fine Water Mist", o2: 19, res: "The mist cools the flame like a wet blanket!" },
+    { id: "hatch", btn: "🚪 Seal the Hatch", o2: 12, res: "Sealed! The flame is running out of air…" },
+  ];
+  const oxy = moves.length === 0 ? 29 : OXY_MOVES.find((m) => m.id === moves[moves.length - 1])!.o2;
+  const out = moves.length === 3;
+  const size = 40 + oxy * 3.5;
+  const msg = out ? "Fire out! You used all three space firefighting moves! 🎉" : oxy > 26 ? "The fire is HUGE! Pick a move, Cadet! 🚨" : oxy > 21 ? "It's working — the flame is shrinking!" : "Almost there! One more move!";
 
   return (
     <div className="space-y-6">

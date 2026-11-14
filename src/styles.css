@@ -130,3 +130,9 @@ input[type=range] { accent-color: var(--primary); }
 .drive-in { animation: driveIn 1.2s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes spray { from { opacity: .9; transform: translateX(0) scale(.6) } to { opacity: 0; transform: translateX(160px) scale(1.4) } }
 .spray { animation: spray .7s ease-out both; }
+
+/* Custom cursors: emoji-based, 32px, with fallback */
+.cadet-cursor, .cadet-cursor * { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text x='4' y='26' font-size='24'>💧</text></svg>") 16 28, auto; }
+.cadet-cursor button, .cadet-cursor a { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text x='0' y='26' font-size='24'>🚒</text></svg>") 26 16, pointer; }
+.ops-cursor, .ops-cursor * { cursor: crosshair; }
+.ops-cursor button, .ops-cursor a { cursor: pointer; }

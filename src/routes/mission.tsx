@@ -39,6 +39,13 @@ function Chapter({ n, title, story, task, done, children }: { n: number; title: 
 
 const EXP = [["CFI-G", "cool flames, gases"], ["BASS-II", "solids, flammability limits"], ["FLEX", "droplets, cool flames"], ["SoFIE", "materials ignition"], ["ACME", "gas diffusion flames"]];
 
+const GHOST = [
+  { btn: "📢 Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!", o2: 29, flame: 130, fact: "Every space fire starts with a call. Mission Control watches the air in every room, 24/7." },
+  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting dizzy and slows down!", o2: 26, flame: 100, fact: "In space, flames eat the air blown by fans. No fan = no fresh oxygen = a sleepy flame." },
+  { btn: "💦 Spray the Magic Water Mist!", res: "The mist clings to the flame like a wet blanket!", o2: 18, flame: 55, fact: "NASA's fine-water mist uses static electricity to stick to surfaces — a bucket of water would just float away!" },
+  { btn: "🚪 Seal the Hatch!", res: "Door sealed! The flame ate all the air and fell asleep. 😴", o2: 12, flame: 0, fact: "With the hatch closed, the fire uses up the last oxygen and goes out — just like a candle under a jar." },
+];
+
 function Mission() {
   const [step, setStep] = useState(0);
   const [truck, setTruck] = useState(false);
@@ -46,12 +53,12 @@ function Mission() {
   const [oxy, setOxy] = useState(21);
   const [maxOxy, setMaxOxy] = useState(21);
   const [scan, setScan] = useState(0);
-  const [hits, setHits] = useState(0);
-  const [sprays, setSprays] = useState<number[]>([]);
+  const [ghost, setGhost] = useState(0);
+  const [splash, setSplash] = useState(false);
   useEffect(() => { if (scan > 0 && scan <= EXP.length) { const t = setTimeout(() => setScan(scan + 1), 450); return () => clearTimeout(t); } return undefined; }, [scan]);
 
   const ignRate30 = (() => { const r = ROWS.filter((x) => x.o2 >= 0.3); return Math.round((r.filter((x) => x.ign).length / r.length) * 100); })();
-  const unlocked = [truck, space, maxOxy > 30, scan > EXP.length, hits >= 5, true][step]!;
+  const unlocked = [truck, space, maxOxy > 30, scan > EXP.length, ghost >= 4, true][step]!;
   const total = 6;
 
   const chapters = [

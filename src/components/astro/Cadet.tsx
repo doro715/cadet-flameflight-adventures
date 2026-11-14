@@ -92,6 +92,31 @@ export function Cadet() {
       </div>
 
       <div className="rounded-3xl border bg-card p-6">
+        <h3 className="text-xl font-bold">👻 How to fight a Ghost Flame!</h3>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          {GHOST_SCIENCE.map((g) => (
+            <div key={g.title} className="rounded-2xl bg-secondary p-4">
+              <div className="text-2xl">{g.icon}</div>
+              <div className="mt-1 font-bold">{g.title}</div>
+              <p className="mt-1 text-sm">{g.kid}</p>
+              <p className="mt-2 text-xs text-muted-foreground">{g.sci}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 rounded-2xl border-2 border-dashed p-5 text-center">
+          <div className="mb-3 flex justify-center">
+            {ghost < 3 ? <Flame round size={ghost === 2 ? 50 : ghost === 1 ? 80 : 110} /> : <span className="text-6xl">😴</span>}
+          </div>
+          {ghost < 3 ? (
+            <button onClick={() => setGhost(ghost + 1)} className="rounded-full bg-primary px-6 py-3 text-lg font-bold text-primary-foreground">{GHOST_STEPS[ghost]!.btn}</button>
+          ) : (
+            <button onClick={() => setGhost(0)} className="rounded-full border px-5 py-2 font-bold">Fight another fire!</button>
+          )}
+          {ghost > 0 && <p className="mt-3 font-bold">{GHOST_STEPS[ghost - 1]!.res}</p>}
+        </div>
+      </div>
+
+      <div className="rounded-3xl border bg-card p-6">
         <div className="flex items-center justify-between"><h3 className="text-xl font-bold">🧠 Space Fire Quiz</h3><span className="text-lg">{"⭐".repeat(stars)}<span className="opacity-30">{"⭐".repeat(QUIZ.length - stars)}</span></span></div>
         {!done ? (
           <div className="mt-4">

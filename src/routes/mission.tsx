@@ -48,7 +48,7 @@ function Mission() {
   const [scan, setScan] = useState(0);
   const [hits, setHits] = useState(0);
   const [sprays, setSprays] = useState<number[]>([]);
-  useEffect(() => { if (scan > 0 && scan <= EXP.length) { const t = setTimeout(() => setScan(scan + 1), 450); return () => clearTimeout(t); } }, [scan]);
+  useEffect(() => { if (scan > 0 && scan <= EXP.length) { const t = setTimeout(() => setScan(scan + 1), 450); return () => clearTimeout(t); } return undefined; }, [scan]);
 
   const ignRate30 = (() => { const r = ROWS.filter((x) => x.o2 >= 0.3); return Math.round((r.filter((x) => x.ign).length / r.length) * 100); })();
   const unlocked = [truck, space, maxOxy > 30, scan > EXP.length, hits >= 5, true][step]!;

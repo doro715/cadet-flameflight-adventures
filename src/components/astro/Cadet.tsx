@@ -82,16 +82,16 @@ export function Cadet() {
         <div className="flex items-center justify-between"><h3 className="text-xl font-bold">🧠 Space Fire Quiz</h3><span className="text-lg">{"⭐".repeat(stars)}<span className="opacity-30">{"⭐".repeat(QUIZ.length - stars)}</span></span></div>
         {!done ? (
           <div className="mt-4">
-            <p className="text-lg font-bold">{i + 1}. {QUIZ[i].q}</p>
+            <p className="text-lg font-bold">{i + 1}. {QUIZ[i]!.q}</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {QUIZ[i].a.map((a, k) => {
-                const st = pick === null ? "hover:bg-secondary" : k === QUIZ[i].c ? "border-safe bg-safe/20" : k === pick ? "border-destructive bg-destructive/20" : "opacity-50";
-                return <button key={k} disabled={pick !== null} onClick={() => { setPick(k); if (k === QUIZ[i].c) setStars((s) => s + 1); }} className={`rounded-2xl border-2 p-4 text-left font-bold transition ${st}`}>{a}</button>;
+              {QUIZ[i]!.a.map((a, k) => {
+                const st = pick === null ? "hover:bg-secondary" : k === QUIZ[i]!.c ? "border-safe bg-safe/20" : k === pick ? "border-destructive bg-destructive/20" : "opacity-50";
+                return <button key={k} disabled={pick !== null} onClick={() => { setPick(k); if (k === QUIZ[i]!.c) setStars((s) => s + 1); }} className={`rounded-2xl border-2 p-4 text-left font-bold transition ${st}`}>{a}</button>;
               })}
             </div>
             {pick !== null && (
               <div className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl bg-secondary p-4">
-                <span className="text-2xl">🚒</span><p className="flex-1 text-sm"><b>{pick === QUIZ[i].c ? "Great job!" : "Good try!"}</b> {QUIZ[i].why}</p>
+                <span className="text-2xl">🚒</span><p className="flex-1 text-sm"><b>{pick === QUIZ[i]!.c ? "Great job!" : "Good try!"}</b> {QUIZ[i]!.why}</p>
                 <button onClick={() => { setI(i + 1); setPick(null); }} className="rounded-full bg-primary px-5 py-2 font-bold text-primary-foreground">Next →</button>
               </div>
             )}

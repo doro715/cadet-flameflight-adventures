@@ -53,7 +53,7 @@ const GHOST_SCIENCE = [
 
 export function Cadet() {
   const [space, setSpace] = useState(true);
-  const [oxy, setOxy] = useState(21);
+  const [moves, setMoves] = useState<string[]>([]);
   const [i, setI] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
@@ -94,7 +94,7 @@ export function Cadet() {
       </div>
 
       <div className="rounded-3xl border bg-card p-6">
-        <h3 className="text-xl font-bold">👻 How to fight a Ghost Flame!</h3>
+        <h3 className="text-xl font-bold">🚒 Astro Spark: How to fight a Ghost Flame!</h3>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {GHOST_SCIENCE.map((g) => (
             <div key={g.title} className="rounded-2xl bg-secondary p-4">

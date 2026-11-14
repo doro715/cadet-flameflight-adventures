@@ -138,6 +138,9 @@ input[type=range] { accent-color: var(--primary); }
 .ops-cursor button, .ops-cursor a { cursor: pointer; }
 
 .rescue-strength { accent-color: var(--accent); }
+.astronaut-critical-flash { background: var(--destructive); opacity: .14; animation: astronautAlarm 2s ease-in-out infinite; }
+@keyframes astronautAlarm { 0%,100% { opacity: .08; } 50% { opacity: .32; } }
+@media (prefers-reduced-motion: reduce) { .astronaut-critical-flash { animation: none; opacity: .18; } }
 .rescue-strength::-webkit-progress-bar { background: var(--muted); border-radius: 8px; }
 .rescue-strength::-webkit-progress-value { background: var(--accent); border-radius: 8px; transition: width .3s; }
 .rescue-strength::-moz-progress-bar { background: var(--accent); }

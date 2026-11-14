@@ -1,2 +1,4 @@
 - [x] Replace Cadet panels with a three-act rescue game and Expert handoff.
 - [x] Check game logic and play through desktop and mobile.
+- [ ] Add an English material-and-oxygen experiment with gravity choices and an illustrated story maker.
+- [ ] Verify material thresholds and complete the equipment-to-story flow on desktop and mobile.

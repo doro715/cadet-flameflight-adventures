@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Keep Cadet rescue progression in a browser-safe reducer separate from its presentation so stage gates and game outcomes can be tested independently.
+- Pass the Expert-mode handoff from the home page into Cadet rather than duplicating mode state, so the existing dashboard remains the single destination for real data.

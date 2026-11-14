@@ -46,7 +46,7 @@ function Index() {
         </blockquote>
       </section>
 
-      <main className={`mx-auto max-w-7xl px-5 pb-16 ${mode === "cadet" ? "cadet-cursor" : ""}`}>{mode === "expert" ? <Expert /> : <Cadet />}</main>
+      <main id="dashboard" className={`mx-auto max-w-7xl px-5 pb-16 ${mode === "cadet" ? "cadet-cursor" : ""}`}>{mode === "expert" ? <Expert /> : <Cadet onExpert={() => { setMode("expert"); requestAnimationFrame(() => document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })); }} />}</main>
 
       <footer className="border-t">
         <div className="mx-auto grid max-w-7xl gap-6 px-5 py-8 text-sm text-muted-foreground md:grid-cols-2">

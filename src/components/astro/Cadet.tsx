@@ -38,12 +38,25 @@ const QUIZ = [
   { q: "Can space fires keep burning when you can't see them?", a: ["No way", "Yes — 'cool flames'!"], c: 1, why: "NASA's FLEX experiment found invisible cool flames that keep burning after the bright flame goes out." },
 ];
 
+const GHOST_STEPS = [
+  { btn: "📢 Press to Alert Mission Control!", res: "Calling Houston! The Fire Truck is on the way!" },
+  { btn: "🌀 Turn OFF the Ventilation Fan", res: "Fan is OFF. The ghost flame is getting sleepy!" },
+  { btn: "💦 Spray the Magic Water Mist!", res: "Fire extinguished! You saved the space station! 🎉" },
+];
+
+const GHOST_SCIENCE = [
+  { icon: "🛑", title: "The Ventilation Problem (Fan off!)", kid: "On Earth, fire goes up. In space, fire eats the air blowing from the fans! If we turn off the fans, the fire gets dizzy and slows down.", sci: "Real science: cutting off forced convection stops the oxygen supply." },
+  { icon: "💦", title: "The Magic Water Cloud (Fine-Water Mist)", kid: "We CANNOT throw a bucket of water in space — it will float into the astronauts' noses! 🚫 Instead, we use a magic Fine-Water Mist that sticks to the fire like a wet blanket.", sci: "Real science: NASA's fine-water mist extinguishers use electrostatics to cling to surfaces without floating." },
+  { icon: "🚪", title: "The Big Metal Door (Hatch Closure)", kid: "If the fire is too hot, the Space Fire Truck presses the 'Close Door' button. We seal the room and let the fire eat all the air until it goes to sleep! 💤", sci: "Real science: sealing the module depletes oxygen, starving the fire." },
+];
+
 export function Cadet() {
   const [space, setSpace] = useState(true);
   const [oxy, setOxy] = useState(21);
   const [i, setI] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [stars, setStars] = useState(0);
+  const [ghost, setGhost] = useState(0);
   const done = i >= QUIZ.length;
   const size = 60 + (oxy - 15) * 7;
   const msg = oxy > 30 ? "Whoa! Too much oxygen — the fire is HUGE! 🚨" : oxy > 23 ? "Careful, Cadet! The fire is growing." : "Nice! The fire stays small and safe.";
@@ -75,6 +88,31 @@ export function Cadet() {
           <div className="my-4 flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-background"><Flame round size={Math.min(size, 150)} /></div>
           <input type="range" min={15} max={40} value={oxy} onChange={(e) => setOxy(+e.target.value)} className="w-full" />
           <div className="flex justify-between text-sm"><span>Oxygen: <b>{oxy}%</b></span><span className="font-bold">{msg}</span></div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border bg-card p-6">
+        <h3 className="text-xl font-bold">👻 How to fight a Ghost Flame!</h3>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          {GHOST_SCIENCE.map((g) => (
+            <div key={g.title} className="rounded-2xl bg-secondary p-4">
+              <div className="text-2xl">{g.icon}</div>
+              <div className="mt-1 font-bold">{g.title}</div>
+              <p className="mt-1 text-sm">{g.kid}</p>
+              <p className="mt-2 text-xs text-muted-foreground">{g.sci}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 rounded-2xl border-2 border-dashed p-5 text-center">
+          <div className="mb-3 flex justify-center">
+            {ghost < 3 ? <Flame round size={ghost === 2 ? 50 : ghost === 1 ? 80 : 110} /> : <span className="text-6xl">😴</span>}
+          </div>
+          {ghost < 3 ? (
+            <button onClick={() => setGhost(ghost + 1)} className="rounded-full bg-primary px-6 py-3 text-lg font-bold text-primary-foreground">{GHOST_STEPS[ghost]!.btn}</button>
+          ) : (
+            <button onClick={() => setGhost(0)} className="rounded-full border px-5 py-2 font-bold">Fight another fire!</button>
+          )}
+          {ghost > 0 && <p className="mt-3 font-bold">{GHOST_STEPS[ghost - 1]!.res}</p>}
         </div>
       </div>
 

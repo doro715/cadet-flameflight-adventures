@@ -12,7 +12,7 @@ export function riskScore(o2: number, kPa: number, m: Material, gravity: "micro"
   const o2Partial = (o2 / 100) * kPa; // kPa of O2
   const margin = o2 - m.loi * (101.3 / Math.max(kPa, 20)) ** 0.25;
   const g = gravity === "lunar" ? 1.15 : 1.0;
-  const z = 0.32 * margin * m.factor * g + 0.04 * (o2Partial - 21);
+  const z = 0.16 * margin * m.factor * g + 0.03 * (o2Partial - 21) - 1;
   return Math.round(100 / (1 + Math.exp(-z)));
 }
 
@@ -40,6 +40,8 @@ export function rankExperiments(o2: number, kPa: number, query: string) {
   return EXPERIMENTS.map((e) => {
     let s = 0;
     s += o2 >= e.o2[0] && o2 <= e.o2[1] ? 40 : Math.max(0, 40 - 3 * Math.min(Math.abs(o2 - e.o2[0]), Math.abs(o2 - e.o2[1])));
+    const mid = (e.o2[0] + e.o2[1]) / 2;
+    s -= Math.abs(o2 - mid) * 0.8;
     s += kPa >= e.kPa[0] && kPa <= e.kPa[1] ? 30 : 10;
     if (q) {
       const hay = `${e.id} ${e.name} ${e.summary} ${e.tags.join(" ")} ${e.fuel}`.toLowerCase();

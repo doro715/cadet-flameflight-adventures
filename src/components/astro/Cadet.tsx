@@ -1,4 +1,7 @@
 import { CadetRescue } from "@/components/astro/CadetRescue";
+import { CadetEquipment } from "@/components/astro/CadetEquipment";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export function FireTruck({ className = "" }: { className?: string }) {
   return (
@@ -31,5 +34,13 @@ export function Flame({ round, size }: { round: boolean; size: number }) {
 }
 
 export function Cadet({ onExpert }: { onExpert: () => void }) {
-  return <CadetRescue truck={<FireTruck className="w-full" />} onExpert={onExpert} />;
+  const [activity, setActivity] = useState<"rescue" | "equipment">("rescue");
+  return <div className="space-y-6">
+    <div className="flex flex-wrap gap-3" aria-label="Cadet activities">
+      <Button variant={activity === "rescue" ? "default" : "outline"} aria-pressed={activity === "rescue"} className="h-auto min-h-12 whitespace-normal font-bold" onClick={() => setActivity("rescue")}>🚒 Ghost Flame Rescue</Button>
+      <Button variant={activity === "equipment" ? "default" : "outline"} aria-pressed={activity === "equipment"} className="h-auto min-h-12 whitespace-normal font-bold" onClick={() => setActivity("equipment")}>🧑‍🚒 Space Suit Builder</Button>
+    </div>
+    <div hidden={activity !== "rescue"}><CadetRescue truck={<FireTruck className="w-full" />} onExpert={onExpert} /></div>
+    <div hidden={activity !== "equipment"}><CadetEquipment truck={<FireTruck className="w-full" />} onExpert={onExpert} /></div>
+  </div>;
 }

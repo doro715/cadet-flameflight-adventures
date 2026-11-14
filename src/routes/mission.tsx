@@ -96,15 +96,38 @@ function Mission() {
         )}
       </div>
     </Chapter>,
-    <Chapter n={5} title="Fire in Module B!" done={hits >= 5} task="Tap the fire to spray water mist"
-      story="An alarm rings on the Moon base. Sparky rolls in. In space, a gentle fine water mist works best. Help Sparky put it out!">
-      <div className="relative flex w-full items-center justify-between">
-        <FireTruck className="w-40 bob" />
-        {sprays.map((s) => <span key={s} className="spray pointer-events-none absolute left-36 top-1/2 h-6 w-6 rounded-full bg-accent/60" />)}
-        <button aria-label="Spray the fire" onClick={() => { setHits((h) => h + 1); setSprays((s) => [...s.slice(-4), Date.now()]); }} disabled={hits >= 5}>
-          {hits < 5 ? <Flame round size={160 - hits * 25} /> : <span className="text-6xl">💨</span>}
-        </button>
-        <div className="absolute -bottom-6 left-0 right-0 h-2 overflow-hidden rounded bg-muted"><div className="h-full bg-accent transition-all" style={{ width: `${hits * 20}%` }} /></div>
+    <Chapter n={5} title="Fight the Ghost Flame!" done={ghost >= 4} task="Use all 4 firefighting moves"
+      story="ALARM! A ghost flame — an invisible space fire — is burning in the Destiny Lab. Sparky rolls in. Buckets don't work up here… do you know the four real moves?">
+      <div className="w-full">
+        <div className={`rounded-xl p-2 text-center text-sm font-bold ${ghost === 0 ? "flicker bg-destructive text-destructive-foreground" : "bg-secondary"}`}>
+          {ghost === 0 ? "🚨 ALARM! Ghost flame in the Destiny Lab!" : ghost < 4 ? `Step ${ghost}/4 — keep going!` : "🏅 Ghost Flame Fighter!"}
+        </div>
+        <div className="mt-3 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+          <div className="rounded-xl bg-background p-2 text-center">
+            <div className="text-xs font-bold uppercase text-muted-foreground">Oxygen</div>
+            <div className="font-display text-2xl font-bold">{ghost === 0 ? 29 : GHOST[ghost - 1]!.o2}%</div>
+            <div className="mt-1 h-2 overflow-hidden rounded bg-muted"><div className={`h-full transition-all duration-700 ${(ghost === 0 ? 29 : GHOST[ghost - 1]!.o2) > 21 ? "bg-destructive" : "bg-safe"}`} style={{ width: `${((ghost === 0 ? 29 : GHOST[ghost - 1]!.o2) / 35) * 100}%` }} /></div>
+          </div>
+          <div className="flex justify-center">
+            {ghost < 4 ? <div className={ghost >= 2 ? "" : "flicker"}><Flame round size={ghost === 0 ? 130 : GHOST[ghost - 1]!.flame} /></div> : <span className="text-6xl">😴</span>}
+          </div>
+          <div className="rounded-xl bg-background p-2 text-center">
+            <div className="text-xs font-bold uppercase text-muted-foreground">Ghost flame</div>
+            <div className="font-display text-2xl font-bold">{ghost === 0 ? "AWAKE" : ghost < 4 ? ["AWAKE", "DIZZY", "SHRINKING", "SLEEPY"][ghost] : "ASLEEP"}</div>
+          </div>
+        </div>
+        {ghost > 0 && <div className="rise mt-3 rounded-xl bg-accent/15 p-3 text-sm"><b>{GHOST[ghost - 1]!.res}</b><p className="mt-1 text-muted-foreground">🔬 {GHOST[ghost - 1]!.fact}</p></div>}
+        {splash && <div className="rise mt-3 rounded-xl bg-destructive/15 p-3 text-sm"><b>💧 Oh no! The water blobbed into floating balls — one drifted into an astronaut's nose!</b><p className="mt-1 text-muted-foreground">🔬 Water has no "down" in space. That's why we use sticky mist instead.</p></div>}
+        <div className="mt-3 flex flex-wrap justify-center gap-3">
+          {ghost < 4 ? (
+            <>
+              <button onClick={() => { setGhost(ghost + 1); setSplash(false); }} className="rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground">{GHOST[ghost]!.btn}</button>
+              <button onClick={() => setSplash(true)} className="rounded-full border-2 border-accent px-6 py-3 font-bold">🪣 Throw a bucket of water</button>
+            </>
+          ) : (
+            <button onClick={() => { setGhost(0); setSplash(false); }} className="rounded-full border px-5 py-2 font-bold">Fight it again!</button>
+          )}
+        </div>
       </div>
     </Chapter>,
     <Chapter n={6} title="Welcome, Space Firefighter" done task=""
@@ -113,7 +136,7 @@ function Mission() {
         <div className="mx-auto flex h-36 w-36 items-center justify-center rounded-full bg-flame text-6xl">🏅</div>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link to="/" className="rounded-full bg-primary px-5 py-2 font-bold text-primary-foreground">Open the dashboard</Link>
-          <button onClick={() => { setStep(0); setTruck(false); setSpace(false); setOxy(21); setMaxOxy(21); setScan(0); setHits(0); }} className="rounded-full border px-5 py-2 font-bold">Replay</button>
+          <button onClick={() => { setStep(0); setTruck(false); setSpace(false); setOxy(21); setMaxOxy(21); setScan(0); setGhost(0); setSplash(false); }} className="rounded-full border px-5 py-2 font-bold">Replay</button>
         </div>
       </div>
     </Chapter>,

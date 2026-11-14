@@ -105,16 +105,59 @@ export function Cadet() {
             </div>
           ))}
         </div>
-        <div className="mt-5 rounded-2xl border-2 border-dashed p-5 text-center">
-          <div className="mb-3 flex justify-center">
-            {ghost < 3 ? <Flame round size={ghost === 2 ? 50 : ghost === 1 ? 80 : 110} /> : <span className="text-6xl">😴</span>}
+        <div className="mt-5 rounded-2xl border-2 border-dashed p-5">
+          <div className={`rounded-xl p-3 text-center font-bold ${ghost === 0 ? "flicker bg-destructive text-destructive-foreground" : "bg-secondary"}`}>
+            {ghost === 0 ? "🚨 ALARM! A ghost flame is burning in the Destiny Lab!" : ghost < 4 ? `Mission step ${ghost}/4 — keep going, Cadet!` : "🏅 Mission complete — Ghost Flame Fighter badge earned!"}
           </div>
-          {ghost < 3 ? (
-            <button onClick={() => setGhost(ghost + 1)} className="rounded-full bg-primary px-6 py-3 text-lg font-bold text-primary-foreground">{GHOST_STEPS[ghost]!.btn}</button>
-          ) : (
-            <button onClick={() => setGhost(0)} className="rounded-full border px-5 py-2 font-bold">Fight another fire!</button>
+
+          <div className="mt-4 grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
+            <div className="rounded-xl bg-background p-3 text-center">
+              <div className="text-xs font-bold uppercase text-muted-foreground">Oxygen in the room</div>
+              <div className="font-display text-3xl font-bold">{ghost === 0 ? 29 : GHOST_STEPS[ghost - 1]!.o2}%</div>
+              <div className="mt-1 h-2 overflow-hidden rounded bg-muted">
+                <div className={`h-full transition-all duration-700 ${(ghost === 0 ? 29 : GHOST_STEPS[ghost - 1]!.o2) > 21 ? "bg-destructive" : "bg-safe"}`} style={{ width: `${((ghost === 0 ? 29 : GHOST_STEPS[ghost - 1]!.o2) / 35) * 100}%` }} />
+              </div>
+              <div className="mt-1 text-xs text-muted-foreground">Fire needs oxygen — watch it drop!</div>
+            </div>
+
+            <div className="flex justify-center">
+              {ghost < 4 ? (
+                <div className={ghost >= 2 ? "" : "flicker"}><Flame round size={ghost === 0 ? 110 : GHOST_STEPS[ghost - 1]!.flame} /></div>
+              ) : (
+                <span className="text-6xl">😴</span>
+              )}
+            </div>
+
+            <div className="rounded-xl bg-background p-3 text-center">
+              <div className="text-xs font-bold uppercase text-muted-foreground">Ghost flame</div>
+              <div className="font-display text-3xl font-bold">{ghost === 0 ? "AWAKE" : ghost < 4 ? ["AWAKE", "DIZZY", "SHRINKING", "SLEEPY"][ghost] : "ASLEEP"}</div>
+              <div className="mt-1 text-xs text-muted-foreground">Some space flames are invisible — astronauts call them ghost flames!</div>
+            </div>
+          </div>
+
+          {ghost > 0 && (
+            <div className="mt-4 rounded-xl bg-accent/15 p-3 text-sm">
+              <b>{GHOST_STEPS[ghost - 1]!.res}</b>
+              <p className="mt-1 text-muted-foreground">🔬 {GHOST_STEPS[ghost - 1]!.fact}</p>
+            </div>
           )}
-          {ghost > 0 && <p className="mt-3 font-bold">{GHOST_STEPS[ghost - 1]!.res}</p>}
+          {splash && (
+            <div className="mt-4 rounded-xl bg-destructive/15 p-3 text-sm">
+              <b>💧 Oh no! The water blobbed into floating balls — one drifted into an astronaut's nose!</b>
+              <p className="mt-1 text-muted-foreground">🔬 Water has no "down" in space. That's why we use sticky mist instead.</p>
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            {ghost < 4 ? (
+              <>
+                <button onClick={() => { setGhost(ghost + 1); setSplash(false); }} className="rounded-full bg-primary px-6 py-3 text-lg font-bold text-primary-foreground">{GHOST_STEPS[ghost]!.btn}</button>
+                <button onClick={() => setSplash(true)} className="rounded-full border-2 border-accent px-6 py-3 text-lg font-bold">🪣 Throw a bucket of water</button>
+              </>
+            ) : (
+              <button onClick={() => { setGhost(0); setSplash(false); }} className="rounded-full border px-5 py-2 font-bold">Fight another fire!</button>
+            )}
+          </div>
         </div>
       </div>
 

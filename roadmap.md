@@ -1,2 +1,2 @@
-- [ ] Replace Cadet panels with a three-act rescue game and Expert handoff.
-- [ ] Check game logic and play through desktop and mobile.
+- [x] Replace Cadet panels with a three-act rescue game and Expert handoff.
+- [x] Check game logic and play through desktop and mobile.

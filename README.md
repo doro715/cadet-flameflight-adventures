@@ -1,14 +1,20 @@
-# Welcome to your Lovable project
+# AstraSpark
+
+AstraSpark is a NASA app hackathon project about space fire safety, with a kid-focused Cadet mode.
+
+The project centers on the challenge of how flames behave in microgravity. It includes a Cadet mode for kids and is framed around a short demo with an AI-usage declaration. The project information also mentions a personal story as a possible opening hook.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://cadet-flameflight-adventures.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/9928ed67-8312-51c1-9a97-03328fe009a9).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +26,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS

@@ -2,3 +2,5 @@
 - [x] Check game logic and play through desktop and mobile.
 - [x] Add an English material-and-oxygen experiment with gravity choices and an illustrated story maker.
 - [x] Verify material thresholds and complete the equipment-to-story flow on desktop and mobile.
+- [ ] Add Astronaut isolation simulation, 43-second emergency countdown, and detail-panel source note.
+- [ ] Test exact simulation values, timing, and both emergency outcomes in the live page.

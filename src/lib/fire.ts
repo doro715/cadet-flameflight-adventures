@@ -40,7 +40,7 @@ export const EXPERIMENTS: Experiment[] = [
   { id: "Saffire", name: "Spacecraft Fire Safety Demo", years: "2016–2023", fuel: "solid", o2: null, kPa: [55, 101], summary: "Large-scale fires inside uncrewed Cygnus vehicles; showed real fire growth and pressure rise in a closed cabin.", tags: ["large scale", "cabin", "materials"] },
 ];
 
-export type Env = { o2: number; kPa: number; gravity: "micro" | "lunar"; material?: Material };
+export type Env = { o2: number; kPa: number; gravity: "micro" | "lunar"; material?: Material | undefined };
 export function rankExperiments(env: Env, query: string) {
   const q = query.toLowerCase().trim();
   const solidMaterial = !!env.material;

@@ -15,5 +15,5 @@ Astro Spark is a web dashboard that turns NASA’s microgravity combustion data 
 Expert mode ranks PSI experiments, plots 333 CFI-G tests (ethane, propane and butane; normal and inverse flames), trains a small logistic-regression model in the browser, and exports cleaned data. The ops console offers astronaut, mission-control and scientist views of simulated modules. Cadet mode has Sparky, a mission kit builder and a story maker.
 
 ## 🎬 Watch the 30-Second Demo
-👉 [Click here to download and watch the demo video]
+👉 [Click here to download and watch the demo video] https://github.com/doro715/cadet-flameflight-adventures/blob/main/astro-spark-intro.mp4
 

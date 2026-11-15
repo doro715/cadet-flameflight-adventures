@@ -3,4 +3,5 @@
 - [x] Add an English material-and-oxygen experiment with gravity choices and an illustrated story maker.
 - [x] Verify material thresholds and complete the equipment-to-story flow on desktop and mobile.
 - [x] Add Astronaut isolation simulation, 43-second emergency countdown, and detail-panel source note.
-- [x] Test exact simulation values, timing, and both emergency outcomes in the live page.
+- [x] Test exact simulation values, timing, and both emergency outcomes in the live page.- [ ] Redesign Suit Builder as a mission kit (mission, 5 slots, 4 gauges, mission check, live Sparky, Cadet ID card).
+- [ ] Rebuild story maker as a story workshop (hero, place, problem, kit, 3 choices, 5 pages with facts, edit/regenerate/read-aloud/print, fact-locked AI rewrite with fallback).

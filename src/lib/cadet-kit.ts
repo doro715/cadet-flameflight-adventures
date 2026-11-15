@@ -11,7 +11,7 @@ export type Mission = { id: MissionId; name: string; icon: string; air: string; 
 export const MISSIONS: Mission[] = [
   { id: "iss", name: "Space Station", icon: "🛰️", air: "21% oxygen at 14.7 psi — like air on Earth", o2: 21, need: { prevent: 3, detect: 3, suppress: 3, stamina: 3 }, why: "Help from Mission Control is a radio call away." },
   { id: "moon", name: "Moon base", icon: "🌕", air: "30%+ oxygen at 10.2 psi — extra flame food", o2: 30, need: { prevent: 5, detect: 3, suppress: 3, stamina: 3 }, why: "More oxygen means materials can burn more easily, so Prevent matters most." },
-  { id: "mars", name: "Mars habitat", icon: "🔴", air: "Not decided yet — we pretend Moon-like air", o2: 30, need: { prevent: 4, detect: 3, suppress: 3, stamina: 5 }, why: "Earth is months away, so crews must last on their own: Stamina matters most." },
+  { id: "mars", name: "Mars habitat", icon: "🔴", air: "Not decided yet — we pretend Moon-like air", o2: 30, need: { prevent: 4, detect: 3, suppress: 3, stamina: 4 }, why: "Earth is months away, so crews must last on their own: Stamina matters most." },
 ];
 export type Slot = "fabric" | "detector" | "extinguisher" | "tank" | "sidekick";
 export type KitOption = { id: string; name: string; icon: string; fact: string; source: string; points: Partial<Record<Gauge, number>> };

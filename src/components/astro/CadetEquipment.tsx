@@ -1,43 +1,63 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { EQUIPMENT, equipmentResult, equipmentStory, type StoryChoice } from "@/lib/cadet-equipment";
+import { GAUGES, MISSIONS, SLOTS, CARD_KEY, missionCheck, option, type CadetCard, type Kit, type MissionId } from "@/lib/cadet-kit";
+import { StoryWorkshop } from "./StoryWorkshop";
 
 export function CadetEquipment({ truck, onExpert }: { truck: ReactNode; onExpert: () => void }) {
-  const [materialId, setMaterialId] = useState("cotton");
-  const [oxygen, setOxygen] = useState(30);
-  const [gravity, setGravity] = useState<StoryChoice["gravity"]>("lunar");
-  const [tested, setTested] = useState(false);
-  const [tool, setTool] = useState<StoryChoice["tool"]>("mist");
-  const [story, setStory] = useState<ReturnType<typeof equipmentStory>>([]);
-  const [page, setPage] = useState(0);
-  const material = EQUIPMENT.find((m) => m.id === materialId);
-  if (!material) return null;
-  const above = equipmentResult(material, oxygen) === "above-index";
-  const storyPage = story[page];
-  function change() { setTested(false); setStory([]); setPage(0); }
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [mission, setMission] = useState<MissionId>("moon");
+  const [kit, setKit] = useState<Kit>({});
+  const [name, setName] = useState("");
+  const [card, setCard] = useState<CadetCard | null>(null);
+  useEffect(() => { try { const c = localStorage.getItem(CARD_KEY); if (c) setCard(JSON.parse(c)); } catch { /* ignore */ } }, []);
+  const m = MISSIONS.find((x) => x.id === mission)!;
+  const check = missionCheck(mission, kit);
+  const max = 6;
+  const save = () => {
+    const c: CadetCard = { name: name.trim() || "Cadet", mission, kit, gauges: check.gauges, date: new Date().toLocaleDateString() };
+    localStorage.setItem(CARD_KEY, JSON.stringify(c)); setCard(c);
+  };
 
-  return <section className="space-y-6" aria-label="Space Suit Builder">
-    <div className="border-b pb-5"><p className="text-sm font-bold uppercase text-accent">Sparky’s equipment lab</p><h2 className="mt-2 text-3xl font-bold">🧑‍🚒 Space Suit Builder</h2><p className="mt-3 max-w-3xl text-lg">We’re packing for a Moon base with 30% oxygen. Which fabric should we investigate? Test a sample, change the air, and write your own adventure.</p></div>
-    <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr_1fr]">
-      <div className="space-y-3"><h3 className="text-lg font-bold">1. Pick a material</h3>{EQUIPMENT.map((m) => <Button key={m.id} variant="outline" aria-pressed={materialId === m.id} onClick={() => { setMaterialId(m.id); change(); }} className={`h-auto min-h-20 w-full justify-start whitespace-normal p-3 text-left ${materialId === m.id ? "border-accent bg-accent/10" : ""}`}><span className="text-3xl" aria-hidden="true">{m.icon}</span><span><span className="block font-bold">{m.nickname}</span><span className="block text-xs text-muted-foreground">{m.name} · Example score {m.loi}%</span></span></Button>)}</div>
-      <div className="space-y-4"><h3 className="text-lg font-bold">2. Test your sample</h3><div className={`relative flex min-h-80 flex-col items-center justify-center overflow-hidden rounded-lg border-2 p-5 ${!tested ? "border-border bg-card" : above ? "border-destructive bg-destructive/10" : "border-safe bg-safe/10"}`}>
-        <span className="absolute left-4 top-4 text-xs font-bold text-muted-foreground">PRETEND MATERIAL TEST · NOT A SPACE SUIT CERTIFICATION</span>
-        <svg role="img" aria-label={tested && above ? "Flame beside the material sample" : "Material sample in the test chamber"} viewBox="0 0 200 200" className={`h-52 w-52 ${tested && above ? "text-destructive" : "text-accent"}`}>
-          <path d="M70 40 L90 30 H110 L130 40 L160 65 L143 90 L128 80 V160 H72 V80 L57 90 L40 65 Z" fill="var(--secondary)" stroke="var(--accent)" strokeWidth="3" />
-          <text x="100" y="115" textAnchor="middle" fontSize="38">{material.icon}</text>
-          {tested && above && <g className="flicker"><path d="M152 75 Q194 120 172 159 Q140 180 132 150 Q120 128 152 75" fill="currentColor" opacity=".85" /><path d="M151 112 Q170 143 153 154 Q139 145 151 112" fill="var(--warn)" /></g>}
-          {tested && !above && <path d="M90 140 L99 149 L119 129" stroke="var(--safe)" strokeWidth="6" fill="none" />}
-        </svg>
-        <p className="text-center text-lg font-bold">{material.nickname}</p><p className="mt-1 text-sm">Fire Shield Score: {material.loi}%</p>
-      </div><Button className="h-auto min-h-14 w-full whitespace-normal text-lg font-bold" onClick={() => setTested(true)}>🔬 Test this combination</Button>
-      {tested && <div role="status" className={`rise border-l-4 py-2 pl-4 ${above ? "border-destructive" : "border-safe"}`}><p className="font-bold">{above ? "More oxygen than this example score!" : "Below the example score — keep investigating!"}</p><p className="mt-2 text-sm">{above ? `${oxygen}% oxygen is at or above ${material.loi}%. This material could sustain burning in the reference test. ${material.id === "nomex" ? "Firefighter fabric resists fire, but is not fireproof." : "Try another sample or less oxygen."}` : `${oxygen}% is below ${material.loi}%. That can make burning harder in the reference test, but does not guarantee safety in space.`}</p></div>}</div>
-      <div className="space-y-5"><h3 className="text-lg font-bold">3. Change the environment</h3><label htmlFor="equipment-oxygen" className="block font-bold">🌬️ Flame food: {oxygen}% oxygen</label><input id="equipment-oxygen" aria-label="Equipment oxygen level" type="range" min="21" max="100" value={oxygen} onChange={(e) => { setOxygen(Number(e.target.value)); change(); }} className="h-10 w-full" /><div className="flex flex-wrap gap-2">{[{ value: 21, label: "Earth air · 21%" }, { value: 30, label: "Moon-base idea · 30%" }, { value: 100, label: "Extreme test · 100%" }].map((preset) => <Button key={preset.value} variant="outline" aria-pressed={oxygen === preset.value} className="h-auto min-h-11 whitespace-normal" onClick={() => { setOxygen(preset.value); change(); }}>{preset.label}</Button>)}</div><p className="text-xs text-muted-foreground">100% oxygen is an extreme thought experiment, not a normal space-station atmosphere.</p>
-      <fieldset className="space-y-3"><legend className="font-bold">Where will you explore?</legend><Button variant="outline" aria-pressed={gravity === "micro"} className="h-auto min-h-14 w-full whitespace-normal" onClick={() => { setGravity("micro"); change(); }}>🛰️ Space floating · Microgravity</Button><Button variant="outline" aria-pressed={gravity === "lunar"} className="h-auto min-h-14 w-full whitespace-normal" onClick={() => { setGravity("lunar"); change(); }}>🐇 Moon bunny jumps · ⅙ gravity</Button></fieldset><p className="text-sm text-muted-foreground">Gravity changes how air and flames move. Our simple score comparison does not model that change.</p></div>
+  return <section className="space-y-6" aria-label="Mission kit builder">
+    <div className="border-b pb-5"><p className="text-sm font-bold uppercase text-accent">Sparky’s equipment lab</p><h2 className="mt-2 text-3xl font-bold">🎒 Mission Kit Builder</h2>
+      <ol className="mt-3 flex flex-wrap gap-2 text-sm">{["Choose a mission", "Pack 5 slots", "Mission check"].map((l, i) => <li key={l}><Button variant={step === i + 1 ? "default" : "outline"} size="sm" onClick={() => (i === 0 || i === 1 || check.complete) && setStep((i + 1) as 1 | 2 | 3)}>{i + 1}. {l}</Button></li>)}</ol></div>
+
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="space-y-4">
+        {step === 1 && <div className="grid gap-3 sm:grid-cols-3">{MISSIONS.map((x) => <Button key={x.id} variant="outline" aria-pressed={mission === x.id} onClick={() => setMission(x.id)} className={`h-auto flex-col items-start whitespace-normal p-4 text-left ${mission === x.id ? "border-accent bg-accent/10" : ""}`}><span className="text-4xl">{x.icon}</span><span className="text-lg font-bold">{x.name}</span><span className="text-sm text-muted-foreground">{x.air}</span><span className="text-xs">{x.why}</span></Button>)}
+          <Button className="sm:col-span-3 min-h-12 text-lg font-bold" onClick={() => setStep(2)}>Pack my kit →</Button></div>}
+
+        {step === 2 && <div className="space-y-5">{SLOTS.map((s) => <fieldset key={s.id}><legend className="mb-2 font-bold">{s.label}</legend><div className="grid gap-2 sm:grid-cols-3">{s.options.map((o) => <Button key={o.id} variant="outline" aria-pressed={kit[s.id] === o.id} onClick={() => setKit((k) => ({ ...k, [s.id]: o.id }))} className={`h-auto flex-col items-start whitespace-normal p-3 text-left ${kit[s.id] === o.id ? "border-accent bg-accent/10" : ""}`}><span className="font-bold">{o.icon} {o.name}</span><span className="text-xs font-normal text-muted-foreground">{o.fact}</span><span className="text-[11px] font-normal">{Object.entries(o.points).map(([k, v]) => `${v! > 0 ? "+" : ""}${v} ${k}`).join(" · ") || "no points"}</span></Button>)}</div></fieldset>)}
+          <Button disabled={!check.complete} className="min-h-12 w-full text-lg font-bold" onClick={() => setStep(3)}>{check.complete ? "Run mission check →" : `Fill all 5 slots (${SLOTS.filter((s) => kit[s.id]).length}/5)`}</Button></div>}
+
+        {step === 3 && <div className="space-y-4">
+          <div role="status" className={`rounded-xl border-2 p-4 ${check.ready ? "border-safe bg-safe/10" : "border-warn bg-warn/10"}`}><p className="text-xl font-bold">{check.ready ? `✅ Kit ready for the ${m.name}!` : "⚠️ Not ready yet"}</p>
+            {check.hints.map((h) => <p key={h} className="mt-1">💡 {h}</p>)}
+            {!check.ready && <Button variant="outline" className="mt-3" onClick={() => setStep(2)}>← Change my kit</Button>}</div>
+          {check.ready && <div className="flex flex-wrap items-end gap-3"><label className="text-sm font-bold">Cadet name<input value={name} maxLength={30} onChange={(e) => setName(e.target.value)} className="mt-1 block rounded-lg border bg-background px-3 py-2" placeholder="Your name" /></label><Button className="min-h-11 font-bold" onClick={save}>🪪 Save my Cadet ID card</Button></div>}
+          {card && <IdCard card={card} />}
+        </div>}
+      </div>
+
+      <aside className="space-y-4 rounded-2xl border bg-card p-4" aria-label="Sparky preview">
+        <p className="text-sm font-bold">{m.icon} Sparky for the {m.name}</p>
+        <div className="relative">{truck}<div className="mt-1 flex flex-wrap justify-center gap-1 text-2xl">{SLOTS.map((s) => <span key={s.id} title={s.label} className={kit[s.id] ? "rise" : "opacity-20"}>{option(s.id, kit[s.id])?.icon ?? "⬜"}</span>)}</div></div>
+        {GAUGES.map((g) => { const v = check.gauges[g.id], need = m.need[g.id]; return <div key={g.id}><div className="flex justify-between text-sm"><span>{g.icon} {g.label}</span><span className="font-bold">{v} / need {need}</span></div><div className="relative h-3 rounded-full bg-muted"><div className={`h-full rounded-full transition-all ${v >= need ? "bg-safe" : "bg-warn"}`} style={{ width: `${Math.min(100, (v / max) * 100)}%` }} /><div className="absolute inset-y-0 w-0.5 bg-foreground" style={{ left: `${(need / max) * 100}%` }} /></div></div>; })}
+        <p className="text-xs text-muted-foreground">Game points, not a real safety rating.</p>
+      </aside>
     </div>
-    <div className="border-y py-5"><h3 className="text-lg font-bold">What is a Fire Shield Score?</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">It’s our nickname for LOI: the lowest oxygen concentration that sustains burning in a specific laboratory test. A bigger number means the material needs more oxygen in that test — not that it cannot catch fire. These example values come from this prototype’s material list, not the NASA CFI-G gas dataset; pressure, airflow, geometry and gravity also matter.</p></div>
-    <div className="space-y-5"><h3 className="text-2xl font-bold">📖 Make my Sparky story</h3><p>You’ve picked {material.nickname.toLowerCase()} and {oxygen}% oxygen. Which rescue tool will your story use?</p><div className="flex flex-wrap gap-3">{[{ id: "mist" as const, label: "💧 Tiny water mist" }, { id: "fan" as const, label: "🛑 Stop the fan" }, { id: "hatch" as const, label: "🚪 Isolate the room" }].map((t) => <Button key={t.id} variant="outline" aria-pressed={tool === t.id} className="h-auto min-h-12 whitespace-normal" onClick={() => { setTool(t.id); setStory([]); }}>{t.label}</Button>)}</div><Button disabled={!tested} className="h-auto min-h-14 whitespace-normal font-bold" onClick={() => { setStory(equipmentStory({ materialId, oxygen, gravity, tool })); setPage(0); }}>✨ {tested ? "Create my story" : "Test your equipment first"}</Button>
-    {storyPage && <div className="grid items-center gap-6 border-y py-6 md:grid-cols-2"><div className="relative flex h-64 items-center justify-center bg-accent/5"><div className="w-full max-w-xs">{truck}</div><span className="absolute right-8 top-8 text-6xl" aria-hidden="true">{storyPage.icon}</span></div><div className="space-y-4"><p className="text-sm font-bold text-accent">MY SPARKY STORY · PAGE {page + 1} / 3</p><h4 className="text-2xl font-bold">{storyPage.title}</h4><p className="text-lg leading-relaxed">{storyPage.text}</p><div className="flex flex-wrap gap-3"><Button variant="outline" disabled={page === 0} onClick={() => setPage((n) => n - 1)}>← Back</Button>{page < 2 ? <Button onClick={() => setPage((n) => n + 1)}>Next page →</Button> : <Button className="h-auto min-h-12 whitespace-normal" onClick={onExpert}>🔬 See the Expert Dashboard</Button>}</div></div></div>}
-    </div>
-    <p className="text-xs text-muted-foreground">This is a hackathon prototype. The risk scores use a simplified heuristic model for demonstration, not a validated thermodynamic model. Stories use your choices and written templates, not live AI.</p>
+
+    <StoryWorkshop truck={truck} kit={kit} mission={mission} onExpert={onExpert} />
+    <p className="text-xs text-muted-foreground">This is a hackathon prototype. The risk scores use a simplified heuristic model for demonstration, not a validated thermodynamic model.</p>
   </section>;
+}
+
+function IdCard({ card }: { card: CadetCard }) {
+  const m = MISSIONS.find((x) => x.id === card.mission)!;
+  return <div className="max-w-md rounded-2xl border-2 border-accent bg-gradient-to-br from-card to-secondary p-5 shadow-lg">
+    <div className="flex items-center justify-between"><p className="font-display text-sm font-bold uppercase tracking-widest text-accent">Astro Spark · Cadet ID</p><span className="text-3xl">{m.icon}</span></div>
+    <p className="mt-2 font-display text-3xl font-bold">{card.name}</p><p className="text-sm text-muted-foreground">Mission: {m.name} · {card.date}</p>
+    <p className="mt-3 text-2xl">{SLOTS.map((s) => option(s.id, card.kit[s.id])?.icon).join(" ")}</p>
+    <div className="mt-3 grid grid-cols-4 gap-2 text-center text-xs">{GAUGES.map((g) => <div key={g.id} className="rounded-lg bg-background/60 p-2"><div>{g.icon}</div><div className="font-bold">{card.gauges[g.id]}</div><div>{g.label}</div></div>)}</div>
+  </div>;
 }

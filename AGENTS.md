@@ -35,4 +35,5 @@ use the editor.
 
 <!-- AGENT-MEMORY:BEGIN -->
 - Keep the Astronaut emergency countdown and isolation transitions in a browser-safe reducer; apply scripted readings to the isolated module across console views so the demo stays consistent without claiming measured fire-suppression performance.
+- Keep mission-kit scoring and story templates in browser-safe libs (cadet-kit, cadet-story); the AI story rewrite is a server function that receives only template text plus fact boxes and returns null so the client falls back to the template.
 <!-- AGENT-MEMORY:END -->

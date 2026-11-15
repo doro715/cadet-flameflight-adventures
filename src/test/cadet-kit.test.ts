@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { missionCheck, MISSIONS } from "@/lib/cadet-kit";
 import { makeStory } from "@/lib/cadet-story";
-const best = { fabric: "beta", detector: "smoke", extinguisher: "mist", tank: "pba", sidekick: "astrobee" } as const;
+const best = { fabric: "beta", detector: "co", extinguisher: "mist", tank: "pba", sidekick: "astrobee" } as const;
 describe("mission kit", () => {
   it("Moon base is 30% oxygen at 10.2 psi", () => {
     const moon = MISSIONS.find((m) => m.id === "moon")!;

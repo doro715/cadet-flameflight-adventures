@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { MODULES, moduleRisk, level, context, action, forecast, mat, type Module } from "@/lib/station";
 import { RealData } from "@/components/astro/RealData";
-import { ROWS, train } from "@/lib/model";
+import { ROWS, train, nearShare } from "@/lib/model";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { astronautSimulation, INITIAL_ASTRONAUT, INITIAL_READINGS, SUPPRESSED_READINGS, SUPPRESSION_MESSAGE, ISOLATION_DELAY_MS } from "@/lib/astronaut-simulation";
@@ -125,7 +125,7 @@ function Ops() {
   const top = mods[0];
   if (!cur || !top) return null;
   const isSuppressed = simulation.phase === "suppressed" && cur.id === isolatedModule;
-  const ign = isSuppressed ? SUPPRESSED_READINGS.ignition : role === "astro" && cur.id === "destiny" ? INITIAL_READINGS.ignition : Math.round(model.predict({ type: "normal", fuel: "propane", o2: cur.o2 / 100, bar: cur.kPa / 101.3 }) * 100);
+  const ign = isSuppressed ? SUPPRESSED_READINGS.ignition : role === "astro" && cur.id === "destiny" ? INITIAL_READINGS.ignition : (() => { const n = nearShare(cur.o2 / 100, cur.kPa / 101.3); return n ? Math.round(n.share * 100) : null; })();
   const act = (msg: string, k?: keyof typeof res) => { setLog((l) => [`${new Date().toLocaleTimeString()} · ${msg}`, ...l].slice(0, 5)); if (k) setRes((r) => ({ ...r, [k]: Math.max(0, r[k] - 15) })); };
 
   return (
@@ -138,6 +138,7 @@ function Ops() {
         </div>
       </header>
 
+      <div role="note" className="mx-5 mt-4 rounded-xl border border-warn/60 bg-warn/15 px-4 py-2 text-center text-sm font-bold">Simulated what-if scenarios</div>
       {/* 5-second KPI strip */}
       <div className="grid gap-3 px-5 pt-5 sm:grid-cols-2 lg:grid-cols-4">
         <div className={`rounded-2xl p-4 ${level(top.s).cls}`}><div className="text-xs font-bold uppercase opacity-80">Highest risk module</div><div className="font-display text-2xl font-bold">{top.name} · {top.s}</div></div>
@@ -223,7 +224,7 @@ function Ops() {
           <div className="rounded-2xl border bg-card p-4">
             <div className="flex items-center justify-between"><h3 className="font-bold">{cur.name}</h3><Badge s={cur.s} /></div>
             <dl className="mt-3 space-y-2 text-sm">
-              {[["Oxygen", `${cur.o2.toFixed(1)}%`], ["Pressure", `${cur.kPa} kPa`], ["Material", mat(cur.mat).name], ["Gravity", cur.gravity === "micro" ? "Microgravity" : "Lunar 1/6 g"], ["Risk score", `${cur.s}/100`], ["CFI-G ignition prob.", `${ign}%`]].map(([k, v]) => <div key={k} className="flex justify-between border-b pb-1"><dt className="text-muted-foreground">{k}</dt><dd className="font-bold">{v}</dd></div>)}
+              {[["Oxygen", `${cur.o2.toFixed(1)}%`], ["Pressure", `${cur.kPa} kPa`], ["Material", mat(cur.mat).name], ["Gravity", cur.gravity === "micro" ? "Microgravity" : "Lunar 1/6 g"], ["Risk score", `${cur.s}/100`], ["Share of CFI-G gas-flame tests that ignited near these conditions", ign === null ? "No nearby tests" : `${ign}%`]].map(([k, v]) => <div key={k} className="flex justify-between border-b pb-1"><dt className="text-muted-foreground">{k}</dt><dd className="font-bold">{v}</dd></div>)}
             </dl>
             <p className="mt-3 rounded-lg bg-secondary p-2 text-xs">{context(cur)}</p>
             <p className="mt-2 text-xs"><b>Action:</b> {action(cur, cur.s)}</p>

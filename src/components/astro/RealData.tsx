@@ -1,16 +1,14 @@
-import { useMemo, useState } from "react";
-import { ROWS, FUELS, train, stats } from "@/lib/model";
+import { useState } from "react";
+import { ROWS, FUELS, stats, nearShare } from "@/lib/model";
 
 export function RealData() {
-  const model = useMemo(() => train(), []);
   const [fuel, setFuel] = useState("all");
   const [type, setType] = useState<"all" | "normal" | "inverse">("all");
   const [o2, setO2] = useState(0.3);
   const [bar, setBar] = useState(1);
   const rows = ROWS.filter((r) => (fuel === "all" || r.fuel === fuel) && (type === "all" || r.type === type));
   const s = stats(rows);
-  const p = model.predict({ fuel: fuel === "all" ? FUELS[0]! : fuel, type: type === "inverse" ? "inverse" : "normal", o2, bar });
-  const base = ROWS.filter((r) => r.ign).length / ROWS.length;
+  const near = nearShare(o2, bar, rows);
 
   const W = 520, H = 260, P = 34;
   const x = (v: number) => P + ((v - 0.1) / 0.8) * (W - 2 * P);
@@ -22,7 +20,7 @@ export function RealData() {
         <h3 className="mr-auto text-lg font-bold">Real NASA data: CFI-G cool-flame tests</h3>
         <a href="/cfi_g_clean.csv" download className="rounded-lg border px-3 py-1.5 text-sm hover:bg-secondary">Download clean CSV</a>
       </div>
-      <p className="mb-4 text-sm text-muted-foreground">{ROWS.length} tests from NASA PSI (ethane, propane, butane; normal and inverse flames). The model below is trained live in your browser on these rows.</p>
+      <p className="mb-4 text-sm text-muted-foreground">{ROWS.length} tests from NASA PSI (ethane, propane, butane; normal and inverse flames).</p>
 
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
         {["all", ...FUELS].map((f) => <button key={f} onClick={() => setFuel(f)} className={`rounded-full border px-3 py-1 capitalize ${fuel === f ? "border-primary bg-primary/15" : ""}`}>{f}</button>)}
@@ -46,11 +44,11 @@ export function RealData() {
             {[["Tests", s.n], ["Ignited", `${Math.round(s.rate * 100)}%`], ["Median burn", `${s.medianBurn}s`], ["Longest", `${s.maxBurn}s`]].map(([l, v]) => <div key={l as string} className="rounded-xl bg-secondary p-2"><div className="font-display text-xl font-bold">{v}</div><div className="text-xs text-muted-foreground">{l}</div></div>)}
           </div>
           <div className="rounded-xl border p-3">
-            <div className="text-sm font-bold">Predict hot ignition</div>
+            <div className="text-sm font-bold">Share of CFI-G gas-flame tests that ignited near these conditions</div>
             <label className="mt-2 block text-xs text-muted-foreground">O₂ {Math.round(o2 * 100)}%<input type="range" min={0.12} max={0.85} step={0.01} value={o2} onChange={(e) => setO2(+e.target.value)} className="w-full" /></label>
             <label className="block text-xs text-muted-foreground">Pressure {bar} bar<input type="range" min={0.5} max={3.3} step={0.1} value={bar} onChange={(e) => setBar(+e.target.value)} className="w-full" /></label>
-            <div className="mt-2 font-display text-3xl font-bold text-flame">{Math.round(p * 100)}%</div>
-            <p className="text-xs text-muted-foreground">Logistic regression · training accuracy {Math.round(model.accuracy * 100)}% vs {Math.round(base * 100)}% baseline. Illustrative: tests cluster near limits.</p>
+            <div className="mt-2 font-display text-3xl font-bold text-flame">{near ? `${Math.round(near.share * 100)}%` : "—"}</div>
+            <p className="text-xs text-muted-foreground">{near ? `${near.n} filtered tests within ±3 O₂ points and ±25% pressure.` : "No filtered tests near these conditions."} A count of past tests, not a prediction.</p>
           </div>
         </div>
       </div>

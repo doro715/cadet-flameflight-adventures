@@ -53,6 +53,20 @@ function Chart({ kPa, gravity, o2, matId }: { kPa: number; gravity: "micro" | "l
   );
 }
 
+export function OxygenGap() {
+  return (
+    <div className="rounded-2xl border border-warn/50 bg-warn/10 p-5">
+      <h3 className="text-lg font-bold">Solid-material tests stop near 22% oxygen; Moon-base air starts at 30%</h3>
+      <div className="relative mt-4 h-6 rounded-full bg-muted">
+        <div className="absolute inset-y-0 left-0 rounded-l-full bg-safe/60" style={{ width: `${((22 - 15) / 25) * 100}%` }} />
+        <div className="absolute inset-y-0 right-0 rounded-r-full bg-destructive/60" style={{ left: `${((30 - 15) / 25) * 100}%` }} />
+      </div>
+      <div className="mt-1 flex justify-between text-xs text-muted-foreground"><span>15%</span><span>22% tested solids end</span><span>30% Moon base begins</span><span>40%</span></div>
+      <p className="mt-2 text-sm text-muted-foreground">The 22–30% gap has no solid-material evidence in this app, so material risk there is extrapolated by the simplified model.</p>
+    </div>
+  );
+}
+
 export function Expert() {
   const [o2, setO2] = useState(34);
   const [kPa, setKPa] = useState(70);
@@ -61,7 +75,7 @@ export function Expert() {
   const [q, setQ] = useState("");
   const m = MATERIALS.find((x) => x.id === matId)!;
   const score = riskScore(o2, kPa, m, gravity);
-  const ranked = useMemo(() => rankExperiments(o2, kPa, q), [o2, kPa, q]);
+  const ranked = useMemo(() => rankExperiments({ o2, kPa, gravity, material: m }, q), [o2, kPa, gravity, m, q]);
   const tips = insight(o2, kPa, m, score);
 
   const download = () => {
@@ -111,23 +125,25 @@ export function Expert() {
           </div>
           <Chart kPa={kPa} gravity={gravity} o2={o2} matId={matId} />
         </div>
+        <OxygenGap />
         <RealData />
         <div className="rounded-2xl border bg-card p-5">
           <div className="mb-3 flex flex-wrap items-center gap-3">
-            <h3 className="mr-auto text-lg font-bold">Ranked PSI experiments</h3>
+            <h3 className="mr-auto text-lg font-bold">Ranked PSI experiments <span className="block text-xs font-normal text-muted-foreground">Ranked for {o2}% O₂ · {kPa} kPa · {gravity === "micro" ? "microgravity" : "lunar"} · {m.name}</span></h3>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search: droplets, soot, materials…" className="w-64 rounded-lg border bg-background px-3 py-1.5 text-sm" />
             <button onClick={download} className="rounded-lg bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground">Download CSV</button>
           </div>
           <div className="space-y-2">
-            {ranked.map(({ e, score: s }, i) => (
+            {ranked.map(({ e, score: s, reason }, i) => (
               <details key={e.id} className="group rounded-xl border bg-background/40 p-3" open={i === 0}>
                 <summary className="flex cursor-pointer items-center gap-3 list-none">
                   <span className="font-display text-xl font-bold text-muted-foreground">#{i + 1}</span>
                   <span className="font-bold">{e.id}</span><span className="hidden text-sm text-muted-foreground sm:inline">{e.name} · {e.years}</span>
                   <span className="ml-auto flex items-center gap-2 text-xs"><span className="h-1.5 w-20 overflow-hidden rounded bg-muted"><span className="block h-full bg-flame" style={{ width: `${s}%` }} /></span>{s}</span>
                 </summary>
-                <p className="mt-2 text-sm text-muted-foreground">{e.summary}</p>
-                <div className="mt-2 flex flex-wrap gap-1.5 text-xs">{e.tags.map((t) => <span key={t} className="rounded-full bg-secondary px-2 py-0.5">{t}</span>)}<span className="rounded-full bg-secondary px-2 py-0.5">O₂ {e.o2[0]}–{e.o2[1]}%</span></div>
+                <p className="mt-2 text-sm"><span className="font-bold text-flame">Top reason:</span> {reason}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{e.summary}</p>
+                <div className="mt-2 flex flex-wrap gap-1.5 text-xs">{e.tags.map((t) => <span key={t} className="rounded-full bg-secondary px-2 py-0.5">{t}</span>)}<span className="rounded-full bg-secondary px-2 py-0.5">{e.o2 ? `O₂ ${e.o2[0]}–${e.o2[1]}% (uploaded table)` : "O₂ range: not in uploaded tables"}</span></div>
               </details>
             ))}
           </div>

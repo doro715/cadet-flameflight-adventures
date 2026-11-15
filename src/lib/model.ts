@@ -28,3 +28,9 @@ export function stats(rows: Row[]) {
   const burn = ig.map((r) => r.burn).sort((a, b) => a - b);
   return { n: rows.length, rate: rows.length ? ig.length / rows.length : 0, medianBurn: burn.length ? burn[Math.floor(burn.length / 2)]! : 0, maxBurn: burn.at(-1) ?? 0 };
 }
+
+/** Share of CFI-G tests within ±3 points of O2 and ±25% of pressure that hot-ignited. Null when no tests are nearby. */
+export function nearShare(o2Fraction: number, bar: number, rows: Row[] = ROWS) {
+  const near = rows.filter((r) => Math.abs(r.o2 - o2Fraction) <= 0.03 && Math.abs(Math.log(r.bar / bar)) <= Math.log(1.25));
+  return near.length ? { share: near.filter((r) => r.ign).length / near.length, n: near.length } : null;
+}

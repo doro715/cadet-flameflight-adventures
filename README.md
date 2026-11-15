@@ -6,23 +6,14 @@ The project centers on the challenge of how flames behave in microgravity. It in
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://cadet-flameflight-adventures.lovable.app
+**❤️‍🔥Live app**: https://astraspark.us/ 
 
-## Build with Lovable
+## 🌏Project Summary 
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/9928ed67-8312-51c1-9a97-03328fe009a9).
+Astro Spark is a web dashboard that turns NASA’s microgravity combustion data into clear fire-safety insights for space crews. It ranks Physical Science Informatics (PSI) investigations such as BASS, FLEX and ACME for a chosen environment, lets users explore 333 real CFI-G tests by oxygen, pressure and ignition, and offers the cleaned data for download and modeling. A role-based ops console shows how simulated spacecraft modules could be monitored. Cadet mode, led by Sparky the Space Fire Truck, teaches children why space flames are round and why Moon-base air, with about 30% oxygen or more, burns more easily. The challenge is that PSI data is hard to find, compare and interpret. Astro Spark makes it searchable and understandable for researchers, engineers and the next generation, while stating clearly where data is missing, including partial gravity and its model limits.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+Expert mode ranks PSI experiments, plots 333 CFI-G tests (ethane, propane and butane; normal and inverse flames), trains a small logistic-regression model in the browser, and exports cleaned data. The ops console offers astronaut, mission-control and scientist views of simulated modules. Cadet mode has Sparky, a mission kit builder and a story maker.
 
-## Development
+## 🎬 Watch the 30-Second Demo
+👉 [Click here to download and watch the demo video]
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
